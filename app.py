@@ -2,27 +2,34 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# -----------------------------
-# Page Title
-# -----------------------------
+# ------------------------
+# PAGE TITLE
+# ------------------------
 st.title("Industry Stock Screener")
 
-# -----------------------------
-# Load Data
-# -----------------------------
+# ------------------------
+# LOAD DATA
+# ------------------------
 df = pd.read_csv("stocks.csv")
 
-# -----------------------------
-# Industry Filter
-# -----------------------------
+# Clean column names
+df.columns = df.columns.str.strip()
+
+# Clean sector values
+df["Sector"] = df["Sector"].fillna("Unknown")
+df["Sector"] = df["Sector"].astype(str).str.strip()
+
+# ------------------------
+# INDUSTRY FILTER
+# ------------------------
 industry = st.sidebar.selectbox(
     "Select Industry",
-    ["All"] + sorted(df["Sector"].unique())
+    ["All"] + sorted(df["Sector"].unique().tolist())
 )
 
-# -----------------------------
-# Financial Filters
-# -----------------------------
+# ------------------------
+# FINANCIAL FILTERS
+# ------------------------
 st.sidebar.header("Financial Filters")
 
 max_pe = st.sidebar.slider(
@@ -53,9 +60,9 @@ min_fscore = st.sidebar.slider(
     6
 )
 
-# -----------------------------
-# Recommendation Logic
-# -----------------------------
+# ------------------------
+# RECOMMENDATION LOGIC
+# ------------------------
 def recommendation(row):
 
     if (
@@ -72,14 +79,12 @@ def recommendation(row):
     else:
         return "SELL"
 
-df["Recommendation"] = df.apply(
-    recommendation,
-    axis=1
-)
 
-# -----------------------------
-# Apply Filters
-# -----------------------------
+df["Recommendation"] = df.apply(recommendation, axis=1)
+
+# ------------------------
+# APPLY FILTERS
+# ------------------------
 filtered_df = df[
     (df["PE"] <= max_pe)
     & (df["ROE"] >= min_roe)
@@ -92,10 +97,9 @@ if industry != "All":
         filtered_df["Sector"] == industry
     ]
 
-# -----------------------------
-# Dashboard Statistics
-# -----------------------------
-# Dashboard Statistics
+# ------------------------
+# DASHBOARD STATS
+# ------------------------
 buy_count = len(
     filtered_df[
         filtered_df["Recommendation"] == "BUY"
@@ -120,41 +124,41 @@ col1.metric("BUY", buy_count)
 col2.metric("HOLD", hold_count)
 col3.metric("SELL", sell_count)
 
-# Pie Chart
-fig = px.pie(
-    filtered_df,
-    names="Recommendation",
-    title="Buy / Hold / Sell Distribution"
-)
+# ------------------------
+# PIE CHART
+# ------------------------
+if len(filtered_df) > 0:
 
-st.plotly_chart(fig)
-
-# Scatter Plot
-fig2 = px.scatter(
-    filtered_df,
-    x="PE",
-    y="ROE",
-    color="Recommendation",
-    hover_name="Ticker",
-    title="ROE vs PE Analysis"
-)
-
-st.plotly_chart(fig2)
-
-# Results Table
-st.subheader("Screening Results")
-st.dataframe(filtered_df, use_container_width=True)
-
-# Investment Conclusions
-st.subheader("Investment Conclusions")
-
-for _, row in filtered_df.iterrows():
-    st.write(
-        f"**{row['Ticker']}** is rated "
-        f"**{row['Recommendation']}** "
-        f"with PE = {row['PE']}, "
-        f"ROE = {row['ROE']}%, "
-        f"Debt/Equity = {row['DebtEquity']}, "
-        f"and F-Score = {row['FScore']}."
+    fig = px.pie(
+        filtered_df,
+        names="Recommendation",
+        title="Buy / Hold / Sell Distribution"
     )
 
+    st.plotly_chart(fig, use_container_width=True)
+
+# ------------------------
+# SCATTER PLOT
+# ------------------------
+if len(filtered_df) > 0:
+
+    fig2 = px.scatter(
+        filtered_df,
+        x="PE",
+        y="ROE",
+        color="Recommendation",
+        hover_name="Ticker",
+        title="ROE vs PE Analysis"
+    )
+
+    st.plotly_chart(fig2, use_container_width=True)
+
+# ------------------------
+# RESULTS TABLE
+# ------------------------
+st.subheader("Screening Results")
+
+st.dataframe(
+    filtered_df,
+    use_container_width=True
+)
