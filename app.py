@@ -105,17 +105,20 @@ def calculate_score(row):
 
     # F-Score
     score += row["FScore"] * 2.5
-    # Current Ratio
-if row["CurrentRatio"] >= 2:
-    score += 10
-elif row["CurrentRatio"] >= 1:
-    score += 5
 
-# Revenue Growth
-if row["RevenueGrowth"] >= 15:
-    score += 15
-elif row["RevenueGrowth"] >= 5:
-    score += 10
+    # Current Ratio
+    if row["CurrentRatio"] >= 2:
+        score += 10
+    elif row["CurrentRatio"] >= 1:
+        score += 5
+
+    # Revenue Growth
+    if row["RevenueGrowth"] >= 15:
+        score += 15
+    elif row["RevenueGrowth"] >= 5:
+        score += 10
+
+    return round(score, 1)
 
     return round(score, 1)
 
