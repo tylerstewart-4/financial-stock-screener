@@ -118,10 +118,8 @@ def calculate_score(row):
     elif row["RevenueGrowth"] >= 5:
         score += 10
 
-    return round(score, 1)
-
-    return round(score, 1)
-
+    return min(round(score, 1), 100)
+    
 df["Score"] = df.apply(
     calculate_score,
     axis=1
