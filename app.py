@@ -59,7 +59,19 @@ min_fscore = st.sidebar.slider(
     9,
     6
 )
+min_growth = st.sidebar.slider(
+    "Minimum Revenue Growth (%)",
+    -10,
+    30,
+    5
+)
 
+min_current = st.sidebar.slider(
+    "Minimum Current Ratio",
+    0.0,
+    3.0,
+    1.0
+)
 # ------------------------
 # RECOMMENDATION LOGIC
 # ------------------------
@@ -134,6 +146,8 @@ filtered_df = df[
     & (df["ROE"] >= min_roe)
     & (df["DebtEquity"] <= max_de)
     & (df["FScore"] >= min_fscore)
+    & (df["RevenueGrowth"] >= min_growth)
+    & (df["CurrentRatio"] >= min_current)
 ]
 
 if industry != "All":
