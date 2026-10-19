@@ -63,22 +63,56 @@ min_fscore = st.sidebar.slider(
 # ------------------------
 # RECOMMENDATION LOGIC
 # ------------------------
-def recommendation(row):
+def calculate_score(row):
 
-    if (
-        row["PE"] <= 30
-        and row["ROE"] >= 20
-        and row["DebtEquity"] <= 1.0
-        and row["FScore"] >= 7
-    ):
+    score = 0
+
+    # ROE Score
+    if row["ROE"] >= 30:
+        score += 30
+    elif row["ROE"] >= 20:
+        score += 20
+    elif row["ROE"] >= 10:
+        score += 10
+
+    # PE Score
+    if row["PE"] <= 20:
+        score += 25
+    elif row["PE"] <= 30:
+        score += 15
+    elif row["PE"] <= 40:
+        score += 5
+
+    # Debt-to-Equity Score
+    if row["DebtEquity"] <= 0.5:
+        score += 20
+    elif row["DebtEquity"] <= 1:
+        score += 15
+    elif row["DebtEquity"] <= 2:
+        score += 5
+
+    # F-Score
+    score += row["FScore"] * 2.5
+
+    return round(score, 1)
+
+df["Score"] = df.apply(
+    calculate_score,
+    axis=1
+)
+
+def recommendation(score):
+
+    if score >= 75:
         return "BUY"
-
-    elif row["FScore"] >= 5:
+    elif score >= 50:
         return "HOLD"
-
     else:
         return "SELL"
 
+df["Recommendation"] = df["Score"].apply(
+    recommendation
+)
 
 df["Recommendation"] = df.apply(recommendation, axis=1)
 
