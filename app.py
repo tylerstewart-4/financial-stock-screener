@@ -5,7 +5,7 @@ import pandas as pd
 st.title("Fundamental Stock Screener")
 
 # Load stock data
-df = pd.read_csv("stocks (1).csv")
+df = pd.read_csv("stocks(1).csv")
 
 # Sidebar filters
 st.sidebar.header("Filters")
