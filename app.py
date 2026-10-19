@@ -1,50 +1,117 @@
 import streamlit as st
 import pandas as pd
 
-# Page title
+# -------------------------
+# Page Title
+# -------------------------
 st.title("Fundamental Stock Screener")
 
-# Load stock data
-df = pd.read_csv("stocks(1).csv")
+# -------------------------
+# Load CSV File
+# -------------------------
+df = pd.read_csv("stocks (1).csv")
 
-# Sidebar filters
+# -------------------------
+# Sidebar Filters
+# -------------------------
 st.sidebar.header("Filters")
 
 max_pe = st.sidebar.slider(
     "Maximum PE",
-    min_value=1,
-    max_value=100,
-    value=40
+    1,
+    100,
+    40
 )
 
 min_roe = st.sidebar.slider(
     "Minimum ROE",
-    min_value=0,
-    max_value=100,
-    value=20
+    0,
+    100,
+    20
 )
 
-# Recommendation logic
+max_de = st.sidebar.slider(
+    "Maximum Debt to Equity",
+    0.0,
+    5.0,
+    2.0
+)
+
+min_fscore = st.sidebar.slider(
+    "Minimum F Score",
+    0,
+    9,
+    6
+)
+
+# -------------------------
+# Recommendation Logic
+# -------------------------
 def recommendation(row):
 
-    if row["PE"] <= 30 and row["ROE"] >= 20:
+    if (
+        row["PE"] <= 30
+        and row["ROE"] >= 20
+        and row["DebtEquity"] <= 1.0
+        and row["FScore"] >= 7
+    ):
         return "BUY"
 
-    elif row["ROE"] >= 20:
+    elif row["FScore"] >= 5:
         return "HOLD"
 
     else:
         return "SELL"
 
-# Add recommendation column
-df["Recommendation"] = df.apply(recommendation, axis=1)
+# Create Recommendation Column
+df["Recommendation"] = df.apply(
+    recommendation,
+    axis=1
+)
 
-# Apply filters
+# -------------------------
+# Apply Filters
+# -------------------------
 filtered_df = df[
-    (df["PE"] <= max_pe) &
-    (df["ROE"] >= min_roe)
+    (df["PE"] <= max_pe)
+    & (df["ROE"] >= min_roe)
+    & (df["DebtEquity"] <= max_de)
+    & (df["FScore"] >= min_fscore)
 ]
 
-# Display results
+# -------------------------
+# Dashboard Statistics
+# -------------------------
+buy_count = len(
+    filtered_df[
+        filtered_df["Recommendation"] == "BUY"
+    ]
+)
+
+hold_count = len(
+    filtered_df[
+        filtered_df["Recommendation"] == "HOLD"
+    ]
+)
+
+sell_count = len(
+    filtered_df[
+        filtered_df["Recommendation"] == "SELL"
+    ]
+)
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("BUY", buy_count)
+col2.metric("HOLD", hold_count)
+col3.metric("SELL", sell_count)
+
+# -------------------------
+# Results Table
+# -------------------------
 st.subheader("Screening Results")
-st.dataframe(filtered_df)
+
+st.dataframe(
+    filtered_df,
+    use_container_width=True
+)
