@@ -3,22 +3,27 @@ import pandas as pd
 
 st.title("Fundamental Stock Screener")
 
-data = {
-    "Ticker": ["AAPL", "MSFT", "NVDA", "GOOGL"],
-    "PE": [35, 32, 45, 28],
-    "ROE": [25, 30, 40, 22]
-}
+df = pd.read_csv("stocks.csv")
 
-df = pd.DataFrame(data)
+st.sidebar.header("Filters")
 
-# Sidebar filter
 max_pe = st.sidebar.slider(
-    "Maximum PE Ratio",
-    10,
-    50,
+    "Maximum PE",
+    1,
+    100,
     40
 )
 
-filtered_df = df[df["PE"] <= max_pe]
+min_roe = st.sidebar.slider(
+    "Minimum ROE",
+    0,
+    100,
+    20
+)
+
+filtered_df = df[
+    (df["PE"] <= max_pe) &
+    (df["ROE"] >= min_roe)
+]
 
 st.dataframe(filtered_df)
