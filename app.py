@@ -216,3 +216,24 @@ st.dataframe(
         ]
     ]
 )
+st.subheader("⚠️ Top Sell Opportunities")
+
+top_sells = filtered_df[
+    filtered_df["Recommendation"] == "SELL"
+].sort_values(
+    by="Score",
+    ascending=True
+).head(10)
+
+st.dataframe(
+    top_sells[
+        [
+            "Ticker",
+            "Sector",
+            "Score",
+            "ROE",
+            "PE",
+            "FScore"
+        ]
+    ]
+)
