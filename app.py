@@ -95,5 +95,66 @@ if industry != "All":
 # -----------------------------
 # Dashboard Statistics
 # -----------------------------
+# Dashboard Statistics
 buy_count = len(
-    filtered_df
+    filtered_df[
+        filtered_df["Recommendation"] == "BUY"
+    ]
+)
+
+hold_count = len(
+    filtered_df[
+        filtered_df["Recommendation"] == "HOLD"
+    ]
+)
+
+sell_count = len(
+    filtered_df[
+        filtered_df["Recommendation"] == "SELL"
+    ]
+)
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("BUY", buy_count)
+col2.metric("HOLD", hold_count)
+col3.metric("SELL", sell_count)
+
+# Pie Chart
+fig = px.pie(
+    filtered_df,
+    names="Recommendation",
+    title="Buy / Hold / Sell Distribution"
+)
+
+st.plotly_chart(fig)
+
+# Scatter Plot
+fig2 = px.scatter(
+    filtered_df,
+    x="PE",
+    y="ROE",
+    color="Recommendation",
+    hover_name="Ticker",
+    title="ROE vs PE Analysis"
+)
+
+st.plotly_chart(fig2)
+
+# Results Table
+st.subheader("Screening Results")
+st.dataframe(filtered_df, use_container_width=True)
+
+# Investment Conclusions
+st.subheader("Investment Conclusions")
+
+for _, row in filtered_df.iterrows():
+    st.write(
+        f"**{row['Ticker']}** is rated "
+        f"**{row['Recommendation']}** "
+        f"with PE = {row['PE']}, "
+        f"ROE = {row['ROE']}%, "
+        f"Debt/Equity = {row['DebtEquity']}, "
+        f"and F-Score = {row['FScore']}."
+    )
+
