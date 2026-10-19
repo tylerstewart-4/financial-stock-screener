@@ -114,8 +114,7 @@ df["Recommendation"] = df["Score"].apply(
     recommendation
 )
 
-df["Recommendation"] = df.apply(recommendation, axis=1)
-
+df["Recommendation"] = df["Score"].apply(recommendation)
 # ------------------------
 # APPLY FILTERS
 # ------------------------
