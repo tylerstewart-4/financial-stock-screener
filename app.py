@@ -9,6 +9,3 @@ st.write("Columns found:")
 st.write(df.columns)
 
 st.dataframe(df)
-    filtered_df,
-    use_container_width=True
-)
