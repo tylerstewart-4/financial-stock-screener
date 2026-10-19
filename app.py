@@ -1,52 +1,13 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
-
-st.title("Financial Stock Screener")
-
-import streamlit as st
-import yfinance as yf
 import pandas as pd
 
 st.title("Fundamental Stock Screener")
 
-tickers = [
-    "AAPL",
-    "MSFT",
-    "GOOGL",
-    "AMZN",
-    "META",
-    "NVDA",
-    "AMD",
-    "INTC",
-    "COST",
-    "JNJ"
-]
-
-def get_stock_data(ticker):
-    try:
-        stock = yf.Ticker(ticker)
-        info = stock.info
-
-        return {
-            "Ticker": ticker,
-            "PE": info.get("trailingPE"),
-            "PB": info.get("priceToBook"),
-            "ROE": info.get("returnOnEquity"),
-            "DebtEquity": info.get("debtToEquity"),
-            "MarketCap": info.get("marketCap")
-        }
-
-    except:
-        return None
-
-data = []
-
-for ticker in tickers:
-    row = get_stock_data(ticker)
-
-    if row:
-        data.append(row)
+data = {
+    "Ticker": ["AAPL", "MSFT", "NVDA", "GOOGL"],
+    "PE": [35, 32, 45, 28],
+    "ROE": [0.25, 0.30, 0.40, 0.22]
+}
 
 df = pd.DataFrame(data)
 
