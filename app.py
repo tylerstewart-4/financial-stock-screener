@@ -234,12 +234,22 @@ with col1:
     )
 
 with col2:
-    st.download_button(
-        "Download Full Dataset",
-        df.to_csv(index=False),
-        "full_dataset.csv",
-        "text/csv"
-    )
+    export_df = filtered_df.sort_values(
+    by="Score",
+    ascending=False
+)
+
+export_df = filtered_df.sort_values(
+    by="Score",
+    ascending=False
+)
+
+st.download_button(
+    label="Download Screening Results",
+    data=export_df.to_csv(index=False),
+    file_name="screening_results.csv",
+    mime="text/csv"
+)
 st.subheader("🏆 Top 10 Buy Opportunities")
 
 top_buys = filtered_df[
