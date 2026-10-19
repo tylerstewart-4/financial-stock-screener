@@ -221,12 +221,25 @@ st.dataframe(
     filtered_df,
     use_container_width=True
 )
-st.download_button(
-    label="📥 Download Screening Results",
-    data=filtered_df.to_csv(index=False),
-    file_name="screening_results.csv",
-    mime="text/csv"
-)
+st.subheader("📥 Export Results")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.download_button(
+        "Download Screened Results",
+        filtered_df.to_csv(index=False),
+        "screened_results.csv",
+        "text/csv"
+    )
+
+with col2:
+    st.download_button(
+        "Download Full Dataset",
+        df.to_csv(index=False),
+        "full_dataset.csv",
+        "text/csv"
+    )
 st.subheader("🏆 Top 10 Buy Opportunities")
 
 top_buys = filtered_df[
