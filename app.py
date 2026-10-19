@@ -237,3 +237,39 @@ st.dataframe(
         ]
     ]
 )
+st.subheader("📊 Sector Rankings")
+
+sector_scores = (
+    filtered_df
+    .groupby("Sector")["Score"]
+    .mean()
+    .reset_index()
+)
+
+fig3 = px.bar(
+    sector_scores,
+    x="Sector",
+    y="Score",
+    title="Average Score by Sector",
+    color="Score"
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+st.subheader("📝 Investment Conclusions")
+
+if len(top_buys) > 0:
+
+    best_stock = top_buys.iloc[0]
+
+    st.write(
+        f"The highest-ranked stock is "
+        f"{best_stock['Ticker']} "
+        f"from the {best_stock['Sector']} sector "
+        f"with a score of {best_stock['Score']}."
+    )
+
+    st.write(
+        f"It achieved this ranking due to strong "
+        f"profitability, valuation, leverage, "
+        f"and financial strength metrics."
+    )
