@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 st.title("Fundamental Stock Screener")
 
@@ -53,7 +54,14 @@ def recommendation(row):
 
     else:
         return "SELL"
+        
+fig = px.pie(
+    filtered_df,
+    names="Recommendation",
+    title="Buy / Hold / Sell Distribution"
+)
 
+st.plotly_chart(fig)
 df["Recommendation"] = df.apply(
     recommendation,
     axis=1
