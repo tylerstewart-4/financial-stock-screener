@@ -109,6 +109,28 @@ def recommendation(score):
         return "HOLD"
     else:
         return "SELL"
+        
+st.subheader("🏆 Top 10 Buy Opportunities")
+
+top_buys = filtered_df[
+    filtered_df["Recommendation"] == "BUY"
+].sort_values(
+    by="Score",
+    ascending=False
+).head(10)
+
+st.dataframe(
+    top_buys[
+        [
+            "Ticker",
+            "Sector",
+            "Score",
+            "ROE",
+            "PE",
+            "FScore"
+        ]
+    ]
+)
 
 df["Recommendation"] = df["Score"].apply(
     recommendation
