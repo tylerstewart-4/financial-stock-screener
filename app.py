@@ -261,6 +261,12 @@ st.dataframe(
         ]
     ]
 )
+st.download_button(
+    label="📥 Download Top 10 Buys",
+    data=top_buys.to_csv(index=False),
+    file_name="top_10_buys.csv",
+    mime="text/csv"
+)
 st.subheader("⚠️ Top Sell Opportunities")
 
 top_sells = filtered_df[
@@ -282,6 +288,12 @@ st.dataframe(
         ]
     ]
 )
+st.download_button(
+    label="📥 Download Top 10 Sells",
+    data=top_sells.to_csv(index=False),
+    file_name="top_10_sells.csv",
+    mime="text/csv"
+)
 st.subheader("📊 Sector Rankings")
 
 sector_scores = (
@@ -290,7 +302,12 @@ sector_scores = (
     .mean()
     .reset_index()
 )
-
+st.download_button(
+    label="📥 Download Sector Rankings",
+    data=sector_scores.to_csv(index=False),
+    file_name="sector_rankings.csv",
+    mime="text/csv"
+)
 fig3 = px.bar(
     sector_scores,
     x="Sector",
@@ -328,4 +345,38 @@ st.write(
     f"is {best_sector}."
 )
 
+st.subheader("📁 Export Data")
 
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.download_button(
+        "Screening Results",
+        filtered_df.to_csv(index=False),
+        "screening_results.csv",
+        "text/csv"
+    )
+
+with col2:
+    st.download_button(
+        "Top Buys",
+        top_buys.to_csv(index=False),
+        "top_buys.csv",
+        "text/csv"
+    )
+
+with col3:
+    st.download_button(
+        "Top Sells",
+        top_sells.to_csv(index=False),
+        "top_sells.csv",
+        "text/csv"
+    )
+
+with col4:
+    st.download_button(
+        "Sector Rankings",
+        sector_scores.to_csv(index=False),
+        "sector_rankings.csv",
+        "text/csv"
+    )
