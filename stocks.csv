@@ -1,32 +1,54 @@
-Ticker,PE,ROE,DebtEquity,FScore,Sector
-AAPL,35,25,1.2,8,Technology
-MSFT,32,30,0.8,9,Technology
-NVDA,45,40,0.5,8,Technology
-GOOGL,28,22,0.4,7,Technology
-META,25,27,0.3,8,Technology
-AMD,30,20,0.9,7,Technology
-INTC,18,10,1.8,4,Technology
-NFLX,38,24,1.1,6,Communication
-TSLA,50,15,2.1,5,Automotive
-AMZN,40,18,1.5,5,Consumer
-PFE,12,15,0.7,5,Healthcare
-MRK,14,18,0.8,7,Healthcare
-LLY,38,45,0.6,9,Healthcare
-JNJ,16,17,0.5,8,Healthcare
-JPM,11,16,1.5,7,Financials
-BAC,10,14,1.7,6,Financials
-GS,13,19,1.4,7,Financials
-XOM,15,21,0.3,7,Energy
-CVX,14,19,0.4,7,Energy
-COP,13,25,0.5,8,Energy
-PG,24,28,0.7,8,Consumer Staples
-KO,26,24,1.0,7,Consumer Staples
-PEP,27,23,0.9,7,Consumer Staples
-WMT,29,18,0.8,6,Consumer Staples
-CAT,18,22,1.2,7,Industrials
-BA,35,8,3.5,3,Industrials
-GE,20,16,1.4,6,Industrials
-NEE,22,14,1.6,6,Utilities
-DUK,18,12,1.8,5,Utilities
-SO,19,13,1.9,5,Utilities
-``
+Ticker,PE,ROE,DebtEquity,FScore,CurrentRatio,RevenueGrowth,Sector
+AAPL,35,25,1.2,8,1.1,8,Technology
+MSFT,32,30,0.8,9,1.8,10,Technology
+NVDA,45,40,0.5,8,2.5,25,Technology
+GOOGL,28,22,0.4,7,2.2,12,Technology
+META,25,27,0.3,8,2.8,18,Technology
+AMD,30,20,0.9,7,1.5,15,Technology
+INTC,18,10,1.8,4,1.2,-3,Technology
+CRM,34,21,0.7,7,1.6,11,Technology
+ORCL,24,18,1.1,6,1.3,6,Technology
+ADBE,36,29,0.5,8,1.9,14,Technology
+
+NFLX,38,24,1.1,6,1.3,9,Communication
+DIS,22,12,1.5,5,1.2,4,Communication
+CMCSA,15,16,1.1,6,1.0,5,Communication
+TMUS,27,17,1.4,7,0.9,8,Communication
+
+TSLA,50,15,2.1,5,1.6,12,Automotive
+GM,7,14,1.8,6,1.1,4,Automotive
+F,8,11,2.2,5,1.0,3,Automotive
+
+PFE,12,15,0.7,5,1.5,2,Healthcare
+MRK,14,18,0.8,7,1.6,8,Healthcare
+LLY,38,45,0.6,9,2.0,22,Healthcare
+JNJ,16,17,0.5,8,1.8,5,Healthcare
+ABBV,15,28,3.0,7,1.4,10,Healthcare
+UNH,20,24,0.8,8,1.3,9,Healthcare
+
+JPM,11,16,1.5,7,1.1,6,Financials
+BAC,10,14,1.7,6,1.0,5,Financials
+GS,13,19,1.4,7,1.2,8,Financials
+MS,14,17,1.5,7,1.1,7,Financials
+BLK,21,15,0.4,8,2.0,9,Financials
+
+XOM,15,21,0.3,7,1.9,14,Energy
+CVX,14,19,0.4,7,1.8,12,Energy
+COP,13,25,0.5,8,2.2,20,Energy
+SLB,18,18,0.7,6,1.4,10,Energy
+EOG,12,24,0.2,8,2.3,18,Energy
+
+PG,24,28,0.7,8,1.5,7,Consumer Staples
+KO,26,24,1.0,7,1.2,5,Consumer Staples
+PEP,27,23,0.9,7,1.3,6,Consumer Staples
+WMT,29,18,0.8,6,0.9,4,Consumer Staples
+COST,42,30,0.4,9,1.1,12,Consumer Staples
+
+CAT,18,22,1.2,7,1.6,8,Industrials
+GE,20,16,1.4,6,1.4,7,Industrials
+DE,17,25,1.7,8,1.3,11,Industrials
+HON,24,20,0.9,7,1.5,6,Industrials
+
+NEE,22,14,1.6,6,0.9,5,Utilities
+DUK,18,12,1.8,5,0.8,3,Utilities
+SO,19,13,1.9,5,0.8,4,Utilities
