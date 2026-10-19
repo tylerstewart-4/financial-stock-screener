@@ -4,32 +4,50 @@ import pandas as pd
 
 st.title("Financial Stock Screener")
 
-ticker = st.text_input("Enter a Stock Ticker", "AAPL")
+import streamlit as st
+import yfinance as yf
+import pandas as pd
 
-if ticker:
-    stock = yf.Ticker(ticker)
+st.title("Fundamental Stock Screener")
 
+tickers = [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "META",
+    "NVDA",
+    "AMD",
+    "INTC",
+    "COST",
+    "JNJ"
+]
+
+def get_stock_data(ticker):
     try:
+        stock = yf.Ticker(ticker)
         info = stock.info
 
-        st.subheader(info.get("longName", ticker))
-
-        col1, col2, col3 = st.columns(3)
-
-        col1.metric(
-            "Current Price",
-            f"${info.get('currentPrice', 'N/A')}"
-        )
-
-        col2.metric(
-            "P/E Ratio",
-            info.get("trailingPE", "N/A")
-        )
-
-        col3.metric(
-            "Market Cap",
-            f"${info.get('marketCap', 0):,.0f}"
-        )
+        return {
+            "Ticker": ticker,
+            "PE": info.get("trailingPE"),
+            "PB": info.get("priceToBook"),
+            "ROE": info.get("returnOnEquity"),
+            "DebtEquity": info.get("debtToEquity"),
+            "MarketCap": info.get("marketCap")
+        }
 
     except:
-        st.error("Unable to retrieve data.")
+        return None
+
+data = []
+
+for ticker in tickers:
+    row = get_stock_data(ticker)
+
+    if row:
+        data.append(row)
+
+df = pd.DataFrame(data)
+
+st.dataframe(df)
