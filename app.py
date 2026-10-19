@@ -308,3 +308,10 @@ st.write(
     f"The strongest sector under the current screening criteria "
     f"is {best_sector}."
 )
+st.download_button(
+    label="📥 Download Screening Results",
+    data=filtered_df.to_csv(index=False),
+    file_name="screening_results.csv",
+    mime="text/csv"
+)
+``
