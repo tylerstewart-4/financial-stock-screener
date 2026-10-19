@@ -329,7 +329,7 @@ fig3 = px.bar(
 st.plotly_chart(fig3, use_container_width=True)
 st.subheader("📝 Investment Conclusions")
 
-best_stock = filtered_df.iloc[0]
+best_stock = top_buys.iloc[0]
 
 st.write(
     f"{best_stock['Ticker']} is currently the highest-ranked stock "
@@ -390,3 +390,6 @@ with col4:
         "sector_rankings.csv",
         "text/csv"
     )
+st.write(
+    f"{len(filtered_df)} companies matched the current screening criteria."
+)
