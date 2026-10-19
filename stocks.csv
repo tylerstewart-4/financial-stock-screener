@@ -1,11 +1,32 @@
-Ticker,PE,ROE,DebtEquity,FScore
-AAPL,35,25,1.2,8
-MSFT,32,30,0.8,9
-NVDA,45,40,0.5,8
-GOOGL,28,22,0.4,7
-META,25,27,0.3,8
-TSLA,50,15,2.1,5
-AMD,30,20,0.9,7
-INTC,18,10,1.8,4
-NFLX,38,24,1.1,6
-AMZN,40,18,1.5,5
+Ticker,PE,ROE,DebtEquity,FScore,Sector
+AAPL,35,25,1.2,8,Technology
+MSFT,32,30,0.8,9,Technology
+NVDA,45,40,0.5,8,Technology
+GOOGL,28,22,0.4,7,Technology
+META,25,27,0.3,8,Technology
+AMD,30,20,0.9,7,Technology
+INTC,18,10,1.8,4,Technology
+NFLX,38,24,1.1,6,Communication
+TSLA,50,15,2.1,5,Automotive
+AMZN,40,18,1.5,5,Consumer
+PFE,12,15,0.7,5,Healthcare
+MRK,14,18,0.8,7,Healthcare
+LLY,38,45,0.6,9,Healthcare
+JNJ,16,17,0.5,8,Healthcare
+JPM,11,16,1.5,7,Financials
+BAC,10,14,1.7,6,Financials
+GS,13,19,1.4,7,Financials
+XOM,15,21,0.3,7,Energy
+CVX,14,19,0.4,7,Energy
+COP,13,25,0.5,8,Energy
+PG,24,28,0.7,8,Consumer Staples
+KO,26,24,1.0,7,Consumer Staples
+PEP,27,23,0.9,7,Consumer Staples
+WMT,29,18,0.8,6,Consumer Staples
+CAT,18,22,1.2,7,Industrials
+BA,35,8,3.5,3,Industrials
+GE,20,16,1.4,6,Industrials
+NEE,22,14,1.6,6,Utilities
+DUK,18,12,1.8,5,Utilities
+SO,19,13,1.9,5,Utilities
+``
