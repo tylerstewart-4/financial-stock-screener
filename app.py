@@ -3,15 +3,17 @@ import pandas as pd
 import plotly.express as px
 import yfinance as yf
 
-# ------------------------
+# ---------------------------------------------------
 # PAGE TITLE
-# ------------------------
+# ---------------------------------------------------
+
 st.title("Industry Stock Screener")
 
-# ------------------------
-# LOAD DATA
-# ------------------------
-@st.cache_data
+# ---------------------------------------------------
+# LOAD LIVE DATA
+# ---------------------------------------------------
+
+@st.cache_data(ttl=3600)
 def load_stock_data():
 
     tickers = pd.read_csv("tickers.csv")
@@ -26,41 +28,126 @@ def load_stock_data():
             info = stock.info
 
             rows.append({
+
                 "Ticker": ticker,
+
                 "PE": info.get("trailingPE", 0),
-                "Sector": info.get("sector", "Unknown")
+
+                "ROE": (
+                    info.get("returnOnEquity", 0) * 100
+                    if info.get("returnOnEquity")
+                    else 0
+                ),
+
+                "DebtEquity": info.get("debtToEquity", 0),
+
+                "CurrentRatio": info.get("currentRatio", 0),
+
+                "RevenueGrowth": (
+                    info.get("revenueGrowth", 0) * 100
+                    if info.get("revenueGrowth")
+                    else 0
+                ),
+
+                "MarketCapBillions": (
+                    info.get("marketCap", 0) / 1_000_000_000
+                ),
+
+                "Sector": info.get(
+                    "sector",
+                    "Unknown"
+                )
+
             })
 
         except:
+
             pass
 
-    return pd.DataFrame(rows)
-test_df = load_stock_data()
+    df = pd.DataFrame(rows)
 
-st.write("Rows Loaded From Tickers:")
-st.write(len(test_df))
+    if len(df) == 0:
+        return df
 
-st.dataframe(test_df.head())
+    numeric_cols = [
+        "PE",
+        "ROE",
+        "DebtEquity",
+        "CurrentRatio",
+        "RevenueGrowth",
+        "MarketCapBillions"
+    ]
+
+    for col in numeric_cols:
+
+        df[col] = pd.to_numeric(
+            df[col],
+            errors="coerce"
+        ).fillna(0)
+
+    return df
+
+# ---------------------------------------------------
+# DATAFRAME
+# ---------------------------------------------------
+
 df = load_stock_data()
 
-# Clean column names
-df.columns = df.columns.str.strip()
+if len(df) == 0:
 
-# Clean sector values
-df["Sector"] = df["Sector"].fillna("Unknown")
-df["Sector"] = df["Sector"].astype(str).str.strip()
+    st.error("No stock data loaded.")
+    st.stop()
 
-# ------------------------
+# ---------------------------------------------------
+# STRENGTH SCORE
+# ---------------------------------------------------
+
+def calculate_strength_score(row):
+
+    score = 0
+
+    if row["ROE"] >= 20:
+        score += 3
+    elif row["ROE"] >= 10:
+        score += 2
+    elif row["ROE"] > 0:
+        score += 1
+
+    if row["RevenueGrowth"] >= 15:
+        score += 2
+    elif row["RevenueGrowth"] >= 5:
+        score += 1
+
+    if row["CurrentRatio"] >= 2:
+        score += 2
+    elif row["CurrentRatio"] >= 1:
+        score += 1
+
+    if row["DebtEquity"] <= 1:
+        score += 2
+    elif row["DebtEquity"] <= 2:
+        score += 1
+
+    return score
+
+df["StrengthScore"] = df.apply(
+    calculate_strength_score,
+    axis=1
+)
+
+# ---------------------------------------------------
 # INDUSTRY FILTER
-# ------------------------
+# ---------------------------------------------------
+
 industry = st.sidebar.selectbox(
     "Select Industry",
     ["All"] + sorted(df["Sector"].unique().tolist())
 )
 
-# ------------------------
-# FINANCIAL FILTERS
-# ------------------------
+# ---------------------------------------------------
+# FILTERS
+# ---------------------------------------------------
+
 st.sidebar.header("Financial Filters")
 
 max_pe = st.sidebar.slider(
@@ -84,33 +171,35 @@ max_de = st.sidebar.slider(
     2.0
 )
 
-min_fscore = st.sidebar.slider(
-    "Minimum F Score",
+min_strength = st.sidebar.slider(
+    "Minimum Strength Score",
     0,
     9,
-    6
+    4
 )
+
 min_growth = st.sidebar.slider(
     "Minimum Revenue Growth (%)",
-    -10,
-    30,
+    -20,
+    50,
     5
 )
 
 min_current = st.sidebar.slider(
     "Minimum Current Ratio",
     0.0,
-    3.0,
+    5.0,
     1.0
 )
-# ------------------------
-# RECOMMENDATION LOGIC
-# ------------------------
+
+# ---------------------------------------------------
+# MAIN SCORE
+# ---------------------------------------------------
+
 def calculate_score(row):
 
     score = 0
 
-    # ROE Score
     if row["ROE"] >= 30:
         score += 30
     elif row["ROE"] >= 20:
@@ -118,7 +207,6 @@ def calculate_score(row):
     elif row["ROE"] >= 10:
         score += 10
 
-    # PE Score
     if row["PE"] <= 20:
         score += 25
     elif row["PE"] <= 30:
@@ -126,7 +214,6 @@ def calculate_score(row):
     elif row["PE"] <= 40:
         score += 5
 
-    # Debt-to-Equity Score
     if row["DebtEquity"] <= 0.5:
         score += 20
     elif row["DebtEquity"] <= 1:
@@ -134,34 +221,37 @@ def calculate_score(row):
     elif row["DebtEquity"] <= 2:
         score += 5
 
-    # F-Score
-    score += row["FScore"] * 2.5
+    score += row["StrengthScore"] * 5
 
-    # Current Ratio
     if row["CurrentRatio"] >= 2:
         score += 10
     elif row["CurrentRatio"] >= 1:
         score += 5
 
-    # Revenue Growth
     if row["RevenueGrowth"] >= 15:
         score += 15
     elif row["RevenueGrowth"] >= 5:
         score += 10
 
     return min(round(score, 1), 100)
-    
+
 df["Score"] = df.apply(
     calculate_score,
     axis=1
 )
 
+# ---------------------------------------------------
+# RECOMMENDATIONS
+# ---------------------------------------------------
+
 def recommendation(score):
 
     if score >= 75:
         return "BUY"
+
     elif score >= 50:
         return "HOLD"
+
     else:
         return "SELL"
 
@@ -169,27 +259,34 @@ df["Recommendation"] = df["Score"].apply(
     recommendation
 )
 
-df["Recommendation"] = df["Score"].apply(recommendation)
-# ------------------------
+# ---------------------------------------------------
 # APPLY FILTERS
-# ------------------------
+# ---------------------------------------------------
+
 filtered_df = df[
     (df["PE"] <= max_pe)
     & (df["ROE"] >= min_roe)
     & (df["DebtEquity"] <= max_de)
-    & (df["FScore"] >= min_fscore)
+    & (df["StrengthScore"] >= min_strength)
     & (df["RevenueGrowth"] >= min_growth)
     & (df["CurrentRatio"] >= min_current)
 ]
 
 if industry != "All":
+
     filtered_df = filtered_df[
         filtered_df["Sector"] == industry
     ]
 
-# ------------------------
-# DASHBOARD STATS
-# ------------------------
+filtered_df = filtered_df.sort_values(
+    by="Score",
+    ascending=False
+)
+
+# ---------------------------------------------------
+# DASHBOARD
+# ---------------------------------------------------
+
 buy_count = len(
     filtered_df[
         filtered_df["Recommendation"] == "BUY"
@@ -214,23 +311,22 @@ col1.metric("BUY", buy_count)
 col2.metric("HOLD", hold_count)
 col3.metric("SELL", sell_count)
 
-# ------------------------
-# PIE CHART
-# ------------------------
+# ---------------------------------------------------
+# CHARTS
+# ---------------------------------------------------
+
 if len(filtered_df) > 0:
 
-    fig = px.pie(
+    fig1 = px.pie(
         filtered_df,
         names="Recommendation",
         title="Buy / Hold / Sell Distribution"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-# ------------------------
-# SCATTER PLOT
-# ------------------------
-if len(filtered_df) > 0:
+    st.plotly_chart(
+        fig1,
+        use_container_width=True
+    )
 
     fig2 = px.scatter(
         filtered_df,
@@ -241,186 +337,25 @@ if len(filtered_df) > 0:
         title="ROE vs PE Analysis"
     )
 
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
 
-# ------------------------
-# RESULTS TABLE
-# ------------------------
+# ---------------------------------------------------
+# RESULTS
+# ---------------------------------------------------
+
 st.subheader("Screening Results")
 
 st.dataframe(
     filtered_df,
     use_container_width=True
 )
-st.subheader("📥 Export Results")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.download_button(
-        "Download Screened Results",
-        filtered_df.to_csv(index=False),
-        "screened_results.csv",
-        "text/csv"
-    )
-
-with col2:
-    export_df = filtered_df.sort_values(
-    by="Score",
-    ascending=False
-)
-
-export_df = filtered_df.sort_values(
-    by="Score",
-    ascending=False
-)
 
 st.download_button(
-    label="Download Screening Results",
-    data=export_df.to_csv(index=False),
-    file_name="screening_results.csv",
-    mime="text/csv"
-)
-st.subheader("🏆 Top 10 Buy Opportunities")
-
-top_buys = filtered_df[
-    filtered_df["Recommendation"] == "BUY"
-].sort_values(
-    by="Score",
-    ascending=False
-).head(10)
-
-st.dataframe(
-    top_buys[
-        [
-            "Ticker",
-            "Sector",
-            "Score",
-            "ROE",
-            "PE",
-            "FScore"
-        ]
-    ]
-)
-st.download_button(
-    label="📥 Download Top 10 Buys",
-    data=top_buys.to_csv(index=False),
-    file_name="top_10_buys.csv",
-    mime="text/csv"
-)
-st.subheader("⚠️ Top Sell Opportunities")
-
-top_sells = filtered_df[
-    filtered_df["Recommendation"] == "SELL"
-].sort_values(
-    by="Score",
-    ascending=True
-).head(10)
-
-st.dataframe(
-    top_sells[
-        [
-            "Ticker",
-            "Sector",
-            "Score",
-            "ROE",
-            "PE",
-            "FScore"
-        ]
-    ]
-)
-st.download_button(
-    label="📥 Download Top 10 Sells",
-    data=top_sells.to_csv(index=False),
-    file_name="top_10_sells.csv",
-    mime="text/csv"
-)
-st.subheader("📊 Sector Rankings")
-
-sector_scores = (
-    filtered_df
-    .groupby("Sector")["Score"]
-    .mean()
-    .reset_index()
-)
-st.download_button(
-    label="📥 Download Sector Rankings",
-    data=sector_scores.to_csv(index=False),
-    file_name="sector_rankings.csv",
-    mime="text/csv"
-)
-fig3 = px.bar(
-    sector_scores,
-    x="Sector",
-    y="Score",
-    title="Average Score by Sector",
-    color="Score"
-)
-
-st.plotly_chart(fig3, use_container_width=True)
-st.subheader("📝 Investment Conclusions")
-
-best_stock = top_buys.iloc[0]
-
-st.write(
-    f"{best_stock['Ticker']} is currently the highest-ranked stock "
-    f"with a score of {best_stock['Score']}."
-)
-
-st.write(
-    f"The company ranks highly because it combines strong "
-    f"profitability (ROE), reasonable valuation (PE), "
-    f"healthy liquidity (Current Ratio), low leverage "
-    f"(Debt-to-Equity), strong revenue growth, and a high "
-    f"Piotroski F-Score."
-)
-
-best_sector = (
-    filtered_df.groupby("Sector")["Score"]
-    .mean()
-    .idxmax()
-)
-
-st.write(
-    f"The strongest sector under the current screening criteria "
-    f"is {best_sector}."
-)
-
-st.subheader("📁 Export Data")
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.download_button(
-        "Screening Results",
-        filtered_df.to_csv(index=False),
-        "screening_results.csv",
-        "text/csv"
-    )
-
-with col2:
-    st.download_button(
-        "Top Buys",
-        top_buys.to_csv(index=False),
-        "top_buys.csv",
-        "text/csv"
-    )
-
-with col3:
-    st.download_button(
-        "Top Sells",
-        top_sells.to_csv(index=False),
-        "top_sells.csv",
-        "text/csv"
-    )
-
-with col4:
-    st.download_button(
-        "Sector Rankings",
-        sector_scores.to_csv(index=False),
-        "sector_rankings.csv",
-        "text/csv"
-    )
-st.write(
-    f"{len(filtered_df)} companies matched the current screening criteria."
+    "Download Screening Results",
+    filtered_df.to_csv(index=False),
+    "screening_results.csv",
+    "text/csv"
 )
