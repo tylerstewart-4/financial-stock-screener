@@ -93,6 +93,11 @@ def load_stock_data():
 
 df = load_stock_data()
 
+st.subheader("Debug Data")
+
+st.write("Total companies loaded:", len(df))
+
+st.dataframe(df)
 if len(df) == 0:
 
     st.error("No stock data loaded.")
