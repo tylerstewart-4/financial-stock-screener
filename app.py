@@ -61,7 +61,7 @@ def load_stock_data():
             })
 
         except Exception as e:
-        st.write(f"Failed: {ticker}")
+            st.write(f"Failed: {ticker}")
 
     df = pd.DataFrame(rows)
 
