@@ -1,1 +1,10 @@
+sp500 = pd.read_html(
+    "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+)[0]
 
+sp500[["Symbol"]].rename(
+    columns={"Symbol": "Ticker"}
+).to_csv(
+    "sp500.csv",
+    index=False
+)
