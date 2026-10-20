@@ -3,9 +3,16 @@ import pandas as pd
 import plotly.express as px
 import yfinance as yf
 
-st.set_page_config(page_title="Industry Stock Screener", layout="wide")
+st.set_page_config(
+    page_title="Industry Stock Screener",
+    layout="wide"
+)
 
 st.title("Industry Stock Screener")
+
+# --------------------------------------------------
+# LOAD LIVE DATA
+# --------------------------------------------------
 
 @st.cache_data(ttl=3600)
 def load_stock_data():
@@ -22,7 +29,9 @@ def load_stock_data():
             info = stock.info
 
             rows.append({
+
                 "Ticker": ticker,
+
                 "PE": info.get("trailingPE", 0),
 
                 "ROE": (
@@ -49,6 +58,7 @@ def load_stock_data():
                     "sector",
                     "Unknown"
                 )
+
             })
 
         except:
@@ -81,7 +91,7 @@ def load_stock_data():
 df = load_stock_data()
 
 if len(df) == 0:
-    st.error("No stock data loaded")
+    st.error("No stock data loaded.")
     st.stop()
 
 st.caption(
@@ -126,18 +136,18 @@ df["StrengthScore"] = df.apply(
     axis=1
 )
 
-# ---------------------------------------------------
+# --------------------------------------------------
 # INDUSTRY FILTER
-# ---------------------------------------------------
+# --------------------------------------------------
 
 industry = st.sidebar.selectbox(
     "Select Industry",
     ["All"] + sorted(df["Sector"].dropna().unique().tolist())
 )
 
-# ---------------------------------------------------
+# --------------------------------------------------
 # FILTERS
-# ---------------------------------------------------
+# --------------------------------------------------
 
 st.sidebar.header("Financial Filters")
 
@@ -190,8 +200,43 @@ max_marketcap = st.sidebar.slider(
     5000
 )
 
+min_criteria = st.sidebar.slider(
+    "Minimum Criteria Met",
+    1,
+    6,
+    4
+)
+
 # --------------------------------------------------
-# SCORE
+# CRITERIA SCORE
+# --------------------------------------------------
+
+def calculate_criteria_met(row):
+
+    criteria = 0
+
+    if row["PE"] <= max_pe:
+        criteria += 1
+
+    if row["ROE"] >= min_roe:
+        criteria += 1
+
+    if row["DebtEquity"] <= max_de:
+        criteria += 1
+
+    if row["StrengthScore"] >= min_strength:
+        criteria += 1
+
+    if row["RevenueGrowth"] >= min_growth:
+        criteria += 1
+
+    if row["CurrentRatio"] >= min_current:
+        criteria += 1
+
+    return criteria
+
+# --------------------------------------------------
+# MAIN SCORE
 # --------------------------------------------------
 
 def calculate_score(row):
@@ -218,17 +263,28 @@ def calculate_score(row):
 
     return min(score, 100)
 
+df["CriteriaMet"] = df.apply(
+    calculate_criteria_met,
+    axis=1
+)
+
 df["Score"] = df.apply(
     calculate_score,
     axis=1
 )
 
+# --------------------------------------------------
+# RECOMMENDATIONS
+# --------------------------------------------------
+
 def recommendation(score):
 
-    if score >= 75:
+    if score >= 60:
         return "BUY"
-    elif score >= 50:
+
+    elif score >= 35:
         return "HOLD"
+
     else:
         return "SELL"
 
@@ -236,13 +292,12 @@ df["Recommendation"] = df["Score"].apply(
     recommendation
 )
 
+# --------------------------------------------------
+# APPLY FILTERS
+# --------------------------------------------------
+
 filtered_df = df[
-    (df["PE"] <= max_pe)
-    & (df["ROE"] >= min_roe)
-    & (df["DebtEquity"] <= max_de)
-    & (df["StrengthScore"] >= min_strength)
-    & (df["RevenueGrowth"] >= min_growth)
-    & (df["CurrentRatio"] >= min_current)
+    (df["CriteriaMet"] >= min_criteria)
     & (df["MarketCapBillions"] <= max_marketcap)
 ]
 
@@ -254,6 +309,10 @@ if industry != "All":
 filtered_df = filtered_df.sort_values(
     by="Score",
     ascending=False
+)
+
+st.success(
+    f"{len(filtered_df)} companies passed the current screen."
 )
 
 # --------------------------------------------------
@@ -284,11 +343,16 @@ c1.metric("BUY", buy_count)
 c2.metric("HOLD", hold_count)
 c3.metric("SELL", sell_count)
 
+# --------------------------------------------------
+# CHARTS
+# --------------------------------------------------
+
 if len(filtered_df) > 0:
 
     fig = px.pie(
         filtered_df,
-        names="Recommendation"
+        names="Recommendation",
+        title="Buy / Hold / Sell Distribution"
     )
 
     st.plotly_chart(fig)
@@ -298,25 +362,36 @@ if len(filtered_df) > 0:
         x="PE",
         y="ROE",
         color="Recommendation",
-        hover_name="Ticker"
+        hover_name="Ticker",
+        title="ROE vs PE Analysis"
     )
 
     st.plotly_chart(scatter)
 
+# --------------------------------------------------
+# RESULTS
+# --------------------------------------------------
+
 st.subheader("Screening Results")
 st.dataframe(filtered_df)
 
+# --------------------------------------------------
+# DISCOVERY STOCKS
+# --------------------------------------------------
+
 st.subheader("🚀 Small Cap Discovery")
 
-small_caps = filtered_df[
+discovery_df = filtered_df[
     filtered_df["MarketCapBillions"] <= 50
 ]
 
-st.dataframe(
-    small_caps.head(10)
-)
+st.dataframe(discovery_df.head(10))
 
-st.subheader("🏆 Top 10 Buys")
+# --------------------------------------------------
+# TOP BUYS
+# --------------------------------------------------
+
+st.subheader("🏆 Top 10 Buy Opportunities")
 
 top_buys = filtered_df[
     filtered_df["Recommendation"] == "BUY"
@@ -324,13 +399,21 @@ top_buys = filtered_df[
 
 st.dataframe(top_buys)
 
-st.subheader("⚠️ Top 10 Sells")
+# --------------------------------------------------
+# TOP SELLS
+# --------------------------------------------------
+
+st.subheader("⚠️ Top 10 Sell Opportunities")
 
 top_sells = filtered_df[
     filtered_df["Recommendation"] == "SELL"
 ].head(10)
 
 st.dataframe(top_sells)
+
+# --------------------------------------------------
+# SECTOR RANKINGS
+# --------------------------------------------------
 
 st.subheader("📊 Sector Rankings")
 
@@ -341,19 +424,25 @@ sector_scores = (
     .reset_index()
 )
 
-sector_chart = px.bar(
-    sector_scores,
-    x="Sector",
-    y="Score",
-    color="Score"
-)
+if len(sector_scores) > 0:
 
-st.plotly_chart(sector_chart)
+    sector_chart = px.bar(
+        sector_scores,
+        x="Sector",
+        y="Score",
+        color="Score"
+    )
 
-st.subheader("📥 Downloads")
+    st.plotly_chart(sector_chart)
+
+# --------------------------------------------------
+# DOWNLOADS
+# --------------------------------------------------
+
+st.subheader("📥 Download Results")
 
 st.download_button(
-    "Download Results",
+    "Download Screening Results",
     filtered_df.to_csv(index=False),
     "screening_results.csv",
     "text/csv"
