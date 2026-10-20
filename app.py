@@ -130,44 +130,45 @@ df["StrengthScore"] = df.apply(
 # FILTERS
 # --------------------------------------------------
 
-industry = st.sidebar.selectbox(
-    "Industry",
-    ["All"] + sorted(df["Sector"].unique())
-)
+# ---------------------------------------------------
+# FILTERS
+# ---------------------------------------------------
+
+st.sidebar.header("Financial Filters")
 
 max_pe = st.sidebar.slider(
     "Maximum PE",
     1,
     100,
-    40
+    50
 )
 
 min_roe = st.sidebar.slider(
     "Minimum ROE",
     0,
     100,
-    10
+    5
 )
 
 max_de = st.sidebar.slider(
     "Maximum Debt to Equity",
     0.0,
     5.0,
-    2.0
+    3.0
 )
 
 min_strength = st.sidebar.slider(
     "Minimum Strength Score",
     0,
     9,
-    2
+    1
 )
 
 min_growth = st.sidebar.slider(
-    "Minimum Revenue Growth",
+    "Minimum Revenue Growth (%)",
     -20,
     50,
-    0
+    -5
 )
 
 min_current = st.sidebar.slider(
@@ -178,7 +179,7 @@ min_current = st.sidebar.slider(
 )
 
 max_marketcap = st.sidebar.slider(
-    "Maximum Market Cap (Billions)",
+    "Maximum Market Cap ($ Billions)",
     1,
     5000,
     5000
