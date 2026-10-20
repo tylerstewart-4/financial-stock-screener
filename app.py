@@ -104,7 +104,32 @@ def load_stock_data(csv_file):
 
     return df
 
+# ---------------------------------------------------
+# LOAD SELECTED UNIVERSE
+# ---------------------------------------------------
 
+if universe == "Custom Watchlist":
+
+    df = load_stock_data("tickers.csv")
+
+elif universe == "S&P 500":
+
+    df = load_stock_data("sp500.csv")
+
+else:
+
+    df = load_stock_data("russell2000.csv")
+
+
+if len(df) == 0:
+
+    st.error("No stock data loaded.")
+    st.stop()
+
+
+st.caption(
+    f"Analyzing {len(df)} companies using live Yahoo Finance data."
+)
 
 # --------------------------------------------------
 # INDUSTRY FILTER
