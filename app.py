@@ -11,6 +11,30 @@ st.title("Industry Stock Screener")
 # ------------------------
 # LOAD DATA
 # ------------------------
+@st.cache_data
+def load_stock_data():
+
+    tickers = pd.read_csv("tickers.csv")
+
+    rows = []
+
+    for ticker in tickers["Ticker"]:
+
+        try:
+
+            stock = yf.Ticker(ticker)
+            info = stock.info
+
+            rows.append({
+                "Ticker": ticker,
+                "PE": info.get("trailingPE", 0),
+                "Sector": info.get("sector", "Unknown")
+            })
+
+        except:
+            pass
+
+    return pd.DataFrame(rows)
 df = pd.read_csv("stocks.csv")
 
 # Clean column names
