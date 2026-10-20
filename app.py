@@ -42,9 +42,7 @@ def load_stock_data(csv_file):
             info = stock.info
 
             rows.append({
-
                 "Ticker": ticker,
-
                 "PE": info.get("trailingPE", 0),
 
                 "ROE": (
@@ -71,7 +69,6 @@ def load_stock_data(csv_file):
                     "sector",
                     "Unknown"
                 )
-
             })
 
         except:
@@ -92,7 +89,6 @@ def load_stock_data(csv_file):
     ]
 
     for col in numeric_cols:
-
         df[col] = pd.to_numeric(
             df[col],
             errors="coerce"
@@ -100,38 +96,31 @@ def load_stock_data(csv_file):
 
     return df
 
+
 # ---------------------------------------------------
 # LOAD SELECTED UNIVERSE
 # ---------------------------------------------------
 
 if universe == "Custom Watchlist":
-
     df = load_stock_data("tickers.csv")
 
 elif universe == "S&P 500":
-
     df = load_stock_data("sp500.csv")
 
 else:
-
     df = load_stock_data("russell2000.csv")
 
-
 if len(df) == 0:
-
     st.error("No stock data loaded.")
     st.stop()
-
 
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
 )
 
-st.caption(
-   
-# --------------------------------------------------
+# ---------------------------------------------------
 # STRENGTH SCORE
-# --------------------------------------------------
+# ---------------------------------------------------
 
 def calculate_strength_score(row):
 
@@ -167,18 +156,18 @@ df["StrengthScore"] = df.apply(
     axis=1
 )
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # INDUSTRY FILTER
-# --------------------------------------------------
+# ---------------------------------------------------
 
 industry = st.sidebar.selectbox(
     "Select Industry",
     ["All"] + sorted(df["Sector"].dropna().unique().tolist())
 )
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # FILTERS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.sidebar.header("Financial Filters")
 
@@ -245,9 +234,9 @@ min_criteria = st.sidebar.slider(
     3
 )
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # CRITERIA SCORE
-# --------------------------------------------------
+# ---------------------------------------------------
 
 def calculate_criteria_met(row):
 
@@ -273,9 +262,15 @@ def calculate_criteria_met(row):
 
     return criteria
 
-# --------------------------------------------------
-# MAIN SCORE
-# --------------------------------------------------
+
+df["CriteriaMet"] = df.apply(
+    calculate_criteria_met,
+    axis=1
+)
+
+# ---------------------------------------------------
+# SCORE
+# ---------------------------------------------------
 
 def calculate_score(row):
 
@@ -302,28 +297,21 @@ def calculate_score(row):
     return min(score, 100)
 
 
-df["CriteriaMet"] = df.apply(
-    calculate_criteria_met,
-    axis=1
-)
-
 df["Score"] = df.apply(
     calculate_score,
     axis=1
 )
 
-# --------------------------------------------------
-# RECOMMENDATIONS
-# --------------------------------------------------
+# ---------------------------------------------------
+# RECOMMENDATION
+# ---------------------------------------------------
 
 def recommendation(score):
 
     if score >= 60:
         return "BUY"
-
     elif score >= 35:
         return "HOLD"
-
     else:
         return "SELL"
 
@@ -332,9 +320,9 @@ df["Recommendation"] = df["Score"].apply(
     recommendation
 )
 
-# --------------------------------------------------
-# APPLY FILTERS
-# --------------------------------------------------
+# ---------------------------------------------------
+# FILTER DATA
+# ---------------------------------------------------
 
 filtered_df = df[
     (df["CriteriaMet"] >= min_criteria)
@@ -342,7 +330,6 @@ filtered_df = df[
 ]
 
 if industry != "All":
-
     filtered_df = filtered_df[
         filtered_df["Sector"] == industry
     ]
@@ -356,12 +343,9 @@ st.success(
     f"{len(filtered_df)} companies passed the current screen."
 )
 
-st.write(
-    f"Screened from {len(df)} total companies."
-)
-# --------------------------------------------------
+# ---------------------------------------------------
 # DASHBOARD
-# --------------------------------------------------
+# ---------------------------------------------------
 
 buy_count = len(
     filtered_df[
@@ -387,9 +371,9 @@ c1.metric("BUY", buy_count)
 c2.metric("HOLD", hold_count)
 c3.metric("SELL", sell_count)
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # CHARTS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 if len(filtered_df) > 0:
 
@@ -412,28 +396,28 @@ if len(filtered_df) > 0:
 
     st.plotly_chart(scatter)
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # RESULTS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.subheader("Screening Results")
 st.dataframe(filtered_df)
 
-# --------------------------------------------------
-# DISCOVERY STOCKS
-# --------------------------------------------------
+# ---------------------------------------------------
+# DISCOVERY
+# ---------------------------------------------------
 
 st.subheader("🚀 Small Cap Discovery")
 
 discovery_df = filtered_df[
-    filtered_df["MarketCapBillions"] <= 50
+    filtered_df["MarketCapBillions"] <= discovery_cap
 ]
 
 st.dataframe(discovery_df.head(10))
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # TOP BUYS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.subheader("🏆 Top 10 Buy Opportunities")
 
@@ -443,9 +427,9 @@ top_buys = filtered_df[
 
 st.dataframe(top_buys)
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # TOP SELLS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.subheader("⚠️ Top 10 Sell Opportunities")
 
@@ -455,9 +439,9 @@ top_sells = filtered_df[
 
 st.dataframe(top_sells)
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # SECTOR RANKINGS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.subheader("📊 Sector Rankings")
 
@@ -479,9 +463,9 @@ if len(sector_scores) > 0:
 
     st.plotly_chart(sector_chart)
 
-# --------------------------------------------------
+# ---------------------------------------------------
 # DOWNLOADS
-# --------------------------------------------------
+# ---------------------------------------------------
 
 st.subheader("📥 Download Results")
 
