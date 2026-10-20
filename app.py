@@ -41,7 +41,7 @@ st.write("Rows Loaded From Tickers:")
 st.write(len(test_df))
 
 st.dataframe(test_df.head())
-df = pd.read_csv("stocks.csv")
+df = load_stock_data()
 
 # Clean column names
 df.columns = df.columns.str.strip()
