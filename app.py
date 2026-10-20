@@ -60,8 +60,10 @@ def load_stock_data():
 
             })
 
-        except Exception as e:
-            st.write(f"Failed: {ticker}")
+        except:
+            pass
+
+    st.write("Rows loaded:", len(rows))
 
     df = pd.DataFrame(rows)
 
@@ -83,8 +85,9 @@ def load_stock_data():
             df[col],
             errors="coerce"
         ).fillna(0)
-st.write("Rows loaded:", len(rows))
+
     return df
+
 
 # ---------------------------------------------------
 # DATAFRAME
