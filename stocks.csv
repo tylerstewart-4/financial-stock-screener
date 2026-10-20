@@ -1,4 +1,4 @@
-Ticker,PE,ROE,DebtEquity,FScore,CurrentRatio,RevenueGrowth,Sector
+Ticker,PE,ROE,DebtEquity,FScore,CurrentRatio,RevenueGrowth,MarketCapBillions,Sector
 AAPL,35,25,1.2,8,1.1,8,Technology
 MSFT,32,30,0.8,9,1.8,10,Technology
 NVDA,45,40,0.5,8,2.5,25,Technology
@@ -52,3 +52,9 @@ HON,24,20,0.9,7,1.5,6,Industrials
 NEE,22,14,1.6,6,0.9,5,Utilities
 DUK,18,12,1.8,5,0.8,3,Utilities
 SO,19,13,1.9,5,0.8,4,Utilities
+
+PLTR,45,18,0.1,8,4.5,25,60,Technology
+RKLB,80,12,0.3,6,2.8,40,9,Aerospace
+SOFI,22,14,0.8,7,1.6,28,12,Financials
+HIMS,38,16,0.0,8,2.5,35,8,Healthcare
+CRWD,55,20,0.4,8,1.9,30,90,Technology
