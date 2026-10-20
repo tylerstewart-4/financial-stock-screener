@@ -132,6 +132,44 @@ st.caption(
 )
 
 # --------------------------------------------------
+# STRENGTH SCORE
+# --------------------------------------------------
+
+def calculate_strength_score(row):
+
+    score = 0
+
+    if row["ROE"] >= 20:
+        score += 3
+    elif row["ROE"] >= 10:
+        score += 2
+    elif row["ROE"] > 0:
+        score += 1
+
+    if row["RevenueGrowth"] >= 15:
+        score += 2
+    elif row["RevenueGrowth"] >= 5:
+        score += 1
+
+    if row["CurrentRatio"] >= 2:
+        score += 2
+    elif row["CurrentRatio"] >= 1:
+        score += 1
+
+    if row["DebtEquity"] <= 1:
+        score += 2
+    elif row["DebtEquity"] <= 2:
+        score += 1
+
+    return score
+
+
+df["StrengthScore"] = df.apply(
+    calculate_strength_score,
+    axis=1
+)
+
+# --------------------------------------------------
 # INDUSTRY FILTER
 # --------------------------------------------------
 
@@ -195,11 +233,18 @@ max_marketcap = st.sidebar.slider(
     5000
 )
 
+discovery_cap = st.sidebar.slider(
+    "Discovery Market Cap Limit ($ Billions)",
+    1,
+    100,
+    20
+)
+
 min_criteria = st.sidebar.slider(
     "Minimum Criteria Met",
     1,
     6,
-    4
+    3
 )
 
 # --------------------------------------------------
@@ -276,10 +321,8 @@ def recommendation(score):
 
     if score >= 60:
         return "BUY"
-
     elif score >= 35:
         return "HOLD"
-
     else:
         return "SELL"
 
@@ -297,6 +340,7 @@ filtered_df = df[
 ]
 
 if industry != "All":
+
     filtered_df = filtered_df[
         filtered_df["Sector"] == industry
     ]
@@ -308,6 +352,10 @@ filtered_df = filtered_df.sort_values(
 
 st.success(
     f"{len(filtered_df)} companies passed the current screen."
+)
+
+st.write(
+    f"Screened from {len(df)} total companies."
 )
 # --------------------------------------------------
 # STRENGTH SCORE
