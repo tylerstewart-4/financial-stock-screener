@@ -1,26 +1,58 @@
 import pandas as pd
-import random
+import yfinance as yf
 
 tickers = pd.read_csv("tickers.csv")
 
-data = []
+rows = []
 
 for ticker in tickers["Ticker"]:
 
-    data.append({
-        "Ticker": ticker,
-        "PE": random.randint(10, 80),
-        "ROE": random.randint(5, 45),
-        "DebtEquity": round(random.uniform(0, 3), 2),
-        "FScore": random.randint(3, 9),
-        "CurrentRatio": round(random.uniform(0.5, 4), 2),
-        "RevenueGrowth": random.randint(-5, 40),
-        "MarketCapBillions": random.randint(1, 3500),
-        "Sector": "Unknown"
-    })
+    try:
 
-df = pd.DataFrame(data)
+        stock = yf.Ticker(ticker)
+        info = stock.info
 
-df.to_csv("stocks.csv", index=False)
+        rows.append({
 
-print("stocks.csv generated!")
+            "Ticker": ticker,
+
+            "PE": info.get("trailingPE", 0),
+
+            "ROE": (
+                info.get("returnOnEquity", 0) * 100
+                if info.get("returnOnEquity")
+                else 0
+            ),
+
+            "DebtEquity": info.get("debtToEquity", 0),
+
+            "CurrentRatio": info.get("currentRatio", 0),
+
+            "RevenueGrowth": (
+                info.get("revenueGrowth", 0) * 100
+                if info.get("revenueGrowth")
+                else 0
+            ),
+
+            "MarketCapBillions": (
+                info.get("marketCap", 0) / 1_000_000_000
+            ),
+
+            "Sector": info.get(
+                "sector",
+                "Unknown"
+            )
+        })
+
+    except Exception as e:
+
+        print(f"Error with {ticker}: {e}")
+
+df = pd.DataFrame(rows)
+
+df.to_csv(
+    "stocks.csv",
+    index=False
+)
+
+print("stocks.csv updated")
