@@ -35,6 +35,12 @@ def load_stock_data():
             pass
 
     return pd.DataFrame(rows)
+test_df = load_stock_data()
+
+st.write("Rows Loaded From Tickers:")
+st.write(len(test_df))
+
+st.dataframe(test_df.head())
 df = pd.read_csv("stocks.csv")
 
 # Clean column names
