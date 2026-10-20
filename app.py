@@ -93,11 +93,6 @@ def load_stock_data():
 
 df = load_stock_data()
 
-st.subheader("Debug Data")
-
-st.write("Total companies loaded:", len(df))
-
-st.dataframe(df)
 if len(df) == 0:
 
     st.error("No stock data loaded.")
@@ -357,6 +352,44 @@ st.dataframe(
     filtered_df,
     use_container_width=True
 )
+st.subheader("🏆 Top 10 Buy Opportunities")
+
+top_buys = filtered_df[
+    filtered_df["Recommendation"] == "BUY"
+].head(10)
+
+st.dataframe(
+    top_buys,
+    use_container_width=True
+)
+st.subheader("⚠️ Top Sell Opportunities")
+
+top_sells = filtered_df[
+    filtered_df["Recommendation"] == "SELL"
+].head(10)
+
+st.dataframe(
+    top_sells,
+    use_container_width=True
+)
+st.subheader("📊 Sector Rankings")
+
+sector_scores = (
+    filtered_df
+    .groupby("Sector")["Score"]
+    .mean()
+    .reset_index()
+)
+
+fig3 = px.bar(
+    sector_scores,
+    x="Sector",
+    y="Score",
+    color="Score",
+    title="Average Sector Score"
+)
+
+st.plotly_chart(fig3)
 
 st.download_button(
     "Download Screening Results",
