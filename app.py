@@ -9,15 +9,32 @@ st.set_page_config(
 )
 
 st.title("Industry Stock Screener")
+tabs = st.tabs([
+    "📋 Custom Watchlist",
+    "🏛️ S&P 500",
+    "🚀 Russell 2000"
+])
+# ---------------------------------------------------
+# STOCK UNIVERSE
+# ---------------------------------------------------
 
-# --------------------------------------------------
+universe = st.sidebar.selectbox(
+    "Stock Universe",
+    [
+        "Custom Watchlist",
+        "S&P 500",
+        "Russell 2000"
+    ]
+)
+
+# ---------------------------------------------------
 # LOAD LIVE DATA
-# --------------------------------------------------
+# ---------------------------------------------------
 
 @st.cache_data(ttl=3600)
-def load_stock_data():
+def load_stock_data(csv_file):
 
-    tickers = pd.read_csv("tickers.csv")
+    tickers = pd.read_csv(csv_file)
 
     rows = []
 
@@ -88,53 +105,6 @@ def load_stock_data():
     return df
 
 
-df = load_stock_data()
-
-if len(df) == 0:
-    st.error("No stock data loaded.")
-    st.stop()
-
-st.caption(
-    f"Analyzing {len(df)} companies using live Yahoo Finance data."
-)
-
-# --------------------------------------------------
-# STRENGTH SCORE
-# --------------------------------------------------
-
-def calculate_strength_score(row):
-
-    score = 0
-
-    if row["ROE"] >= 20:
-        score += 3
-    elif row["ROE"] >= 10:
-        score += 2
-    elif row["ROE"] > 0:
-        score += 1
-
-    if row["RevenueGrowth"] >= 15:
-        score += 2
-    elif row["RevenueGrowth"] >= 5:
-        score += 1
-
-    if row["CurrentRatio"] >= 2:
-        score += 2
-    elif row["CurrentRatio"] >= 1:
-        score += 1
-
-    if row["DebtEquity"] <= 1:
-        score += 2
-    elif row["DebtEquity"] <= 2:
-        score += 1
-
-    return score
-
-
-df["StrengthScore"] = df.apply(
-    calculate_strength_score,
-    axis=1
-)
 
 # --------------------------------------------------
 # INDUSTRY FILTER
