@@ -112,13 +112,6 @@ if len(df) == 0:
 st.info(
     f"Companies Loaded: {len(df)}"
 )
-st.subheader("DEBUG")
-
-st.write("Columns:")
-st.write(df.columns.tolist())
-
-st.write("First 10 rows:")
-st.dataframe(df.head(10))
 
 # --------------------------------------------------
 # STRENGTH SCORE
