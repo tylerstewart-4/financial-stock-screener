@@ -124,9 +124,12 @@ if len(df) == 0:
     st.error("No stock data loaded.")
     st.stop()
 
-
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
+)
+
+st.write(
+    f"Screened from {len(df)} companies."
 )
 
 st.caption(
