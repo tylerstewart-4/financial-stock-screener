@@ -23,13 +23,8 @@ universe = st.sidebar.selectbox(
     ]
 )
 # ---------------------------------------------------
-# LOAD LIVE DATA (FINANCIAL MODELING PREP)
+# LOAD LIVE DATA
 # ---------------------------------------------------
-
-import requests
-
-API_KEY = "PUT_YOUR_NEW_FMP_API_KEY_HERE"
-
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
@@ -41,48 +36,59 @@ def load_stock_data(csv_file):
 
         try:
 
-            profile_url = (
-                f"https://financialmodelingprep.com/api/v3/profile/"
-                f"{ticker}?apikey={API_KEY}"
-            )
-
-            profile_response = requests.get(
-                profile_url,
-                timeout=20
-            )
-
-            profile_data = profile_response.json()
-
-            if not isinstance(profile_data, list):
-                continue
-
-            if len(profile_data) == 0:
-                continue
-
-            profile = profile_data[0]
+            stock = yf.Ticker(ticker)
+            fast = stock.fast_info
 
             rows.append({
+                "Ticker": ticker,
+                "PE": info.get("trailingPE", 0),
+                "ROE": (
+                    info.get("returnOnEquity", 0) * 100
+                    if info.get("returnOnEquity")
+                    else 0
+                ),
+                "DebtEquity": info.get("debtToEquity", 0),
+                "CurrentRatio": info.get("currentRatio", 0),
+                "RevenueGrowth": (
+                    info.get("revenueGrowth", 0) * 100
+                    if info.get("revenueGrowth")
+                    else 0
+                ),
+                "MarketCapBillions": (
+                    info.get("marketCap", 0) / 1_000_000_000
+                ),
+                "Sector": info.get(
+                    "sector",
+                    "Unknown"
+                )
+            })
 
-    "Ticker": ticker,
+        except:
+            pass
 
-    "PE": profile.get("pe", 0),
+    df = pd.DataFrame(rows)
 
-    "ROE": 0,
+    if len(df) == 0:
+        return df
 
-    "DebtEquity": 0,
+    numeric_cols = [
+        "PE",
+        "ROE",
+        "DebtEquity",
+        "CurrentRatio",
+        "RevenueGrowth",
+        "MarketCapBillions"
+    ]
 
-    "CurrentRatio": 0,
+    for col in numeric_cols:
 
-    "RevenueGrowth": 0,
+        df[col] = pd.to_numeric(
+            df[col],
+            errors="coerce"
+        ).fillna(0)
 
-    "MarketCapBillions": profile.get("mktCap", 0) / 1000000000,
+    return df
 
-    "Sector": profile.get(
-        "sector",
-        "Unknown"
-    )
-
-})
 
 # ---------------------------------------------------
 # LOAD SELECTED UNIVERSE
@@ -98,22 +104,19 @@ elif universe == "S&P 500":
 
 elif universe == "Russell 2000":
 
-    df = load_stock_data("russell2000.csv")
+    tickers = pd.read_csv("russell2000.csv")
+
+    st.write("Russell tickers found:", len(tickers))
+
+    st.dataframe(tickers.head())
+
+    st.stop()
 
 else:
 
     st.error("Unknown universe selected.")
     st.stop()
 
-st.subheader("Debug Data")
-
-st.write("Columns returned:")
-
-st.write(df.columns.tolist())
-
-st.write("First 5 rows:")
-
-st.dataframe(df.head())
 
 if len(df) == 0:
 
@@ -122,6 +125,10 @@ if len(df) == 0:
 
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
+)
+
+st.write(
+    f"Screened from {len(df)} companies."
 )
 
 st.caption(
@@ -485,3 +492,4 @@ st.download_button(
     "screening_results.csv",
     "text/csv"
 )
+
