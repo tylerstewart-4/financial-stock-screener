@@ -47,66 +47,61 @@ def load_stock_data(csv_file):
 
     for ticker in tickers["Ticker"]:
 
-        try:
+          try:
 
-            profile_url = (
-                f"https://financialmodelingprep.com/api/v3/profile/"
-                f"{ticker}?apikey={API_KEY}"
+        profile_url = (
+            f"https://financialmodelingprep.com/api/v3/profile/"
+            f"{ticker}?apikey={API_KEY}"
+        )
+
+        response = requests.get(
+            profile_url,
+            timeout=20
+        )
+
+        profile = response.json()
+
+        if not isinstance(profile, list):
+            st.write(f"Failed: {ticker}")
+            st.write(profile)
+            continue
+
+        if len(profile) == 0:
+            st.write(f"Empty response: {ticker}")
+            continue
+
+        profile = profile[0]
+
+        rows.append({
+
+            "Ticker": ticker,
+
+            "PE": profile.get("pe", 0),
+
+            "ROE": 0,
+
+            "DebtEquity": 0,
+
+            "CurrentRatio": 0,
+
+            "RevenueGrowth": 0,
+
+            "MarketCapBillions": (
+                profile.get("mktCap", 0)
+                / 1_000_000_000
+            ),
+
+            "Sector": profile.get(
+                "sector",
+                "Unknown"
             )
 
-            response = requests.get(
-                profile_url,
-                timeout=20
-            )
+        })
 
-            profile = response.json()
+    except Exception as e:
 
-            if not profile:
-                continue
-
-            profile = profile[0]
-
-            rows.append({
-
-                "Ticker": ticker,
-
-                "PE": profile.get("pe", 0),
-
-                "ROE": 0,
-
-                "DebtEquity": 0,
-
-                "CurrentRatio": 0,
-
-                "RevenueGrowth": 0,
-
-                "MarketCapBillions": (
-                    profile.get("mktCap", 0)
-                    / 1_000_000_000
-                ),
-
-                "Sector": profile.get(
-                    "sector",
-                    "Unknown"
-                )
-
-            })
-
-        except Exception as e:
-
-            st.write(
-                f"Failed: {ticker}"
-            )
-
-            st.write(str(e))
-
-    df = pd.DataFrame(rows)
-
-    st.write(
-        f"Rows collected: {len(rows)}"
-    )
-
-    return df
+        st.write(f"Failed: {ticker}")
+        st.write(str(e))
 
 
 # ---------------------------------------------------
