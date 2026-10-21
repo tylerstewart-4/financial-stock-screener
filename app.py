@@ -25,6 +25,10 @@ universe = st.sidebar.selectbox(
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
+import requests
+
+API_KEY = "QByDSMG5IDJ4gsSb0gAq7G12UzvKtag2"
+
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
@@ -36,57 +40,39 @@ def load_stock_data(csv_file):
 
         try:
 
-            stock = yf.Ticker(ticker)
-            info = stock.info
+            url = (
+                f"https://financialmodelingprep.com/api/v3/profile/"
+                f"{ticker}?apikey={API_KEY}"
+            )
+
+            profile = requests.get(url, timeout=10).json()
+
+            if not profile:
+                continue
+
+            profile = profile[0]
+
             rows.append({
+
                 "Ticker": ticker,
-                "PE": info.get("trailingPE", 0),
-                "ROE": (
-                    info.get("returnOnEquity", 0) * 100
-                    if info.get("returnOnEquity")
-                    else 0
-                ),
-                "DebtEquity": info.get("debtToEquity", 0),
-                "CurrentRatio": info.get("currentRatio", 0),
-                "RevenueGrowth": (
-                    info.get("revenueGrowth", 0) * 100
-                    if info.get("revenueGrowth")
-                    else 0
-                ),
+
+                "PE": profile.get("pe", 0),
+
                 "MarketCapBillions": (
-                    info.get("marketCap", 0) / 1_000_000_000
+                    profile.get("mktCap", 0) / 1_000_000_000
                 ),
-                "Sector": info.get(
+
+                "Sector": profile.get(
                     "sector",
                     "Unknown"
                 )
             })
 
         except:
+
             pass
 
-    df = pd.DataFrame(rows)
-
-    if len(df) == 0:
-        return df
-
-    numeric_cols = [
-        "PE",
-        "ROE",
-        "DebtEquity",
-        "CurrentRatio",
-        "RevenueGrowth",
-        "MarketCapBillions"
-    ]
-
-    for col in numeric_cols:
-
-        df[col] = pd.to_numeric(
-            df[col],
-            errors="coerce"
-        ).fillna(0)
-
-    return df
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------
