@@ -383,6 +383,51 @@ discovery_df = filtered_df[
 
 st.dataframe(discovery_df.head(10))
 # --------------------------------------------------
+# CHARTS
+# --------------------------------------------------
+
+if len(filtered_df) > 0:
+
+    fig = px.scatter(
+        filtered_df,
+        x="PE",
+        y="ROE",
+        color="Recommendation",
+        hover_name="Ticker",
+        title="ROE vs PE Analysis"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+# --------------------------------------------------
+# SECTOR RANKINGS
+# --------------------------------------------------
+
+st.subheader("📊 Sector Rankings")
+
+sector_scores = (
+    filtered_df
+    .groupby("Sector")["Score"]
+    .mean()
+    .reset_index()
+)
+
+if len(sector_scores) > 0:
+
+    chart = px.bar(
+        sector_scores,
+        x="Sector",
+        y="Score",
+        color="Score"
+    )
+
+    st.plotly_chart(
+        chart,
+        use_container_width=True
+    )
+# --------------------------------------------------
 # TOP BUYS
 # --------------------------------------------------
 
