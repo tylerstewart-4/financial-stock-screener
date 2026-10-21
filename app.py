@@ -42,8 +42,7 @@ def load_stock_data(csv_file):
 
             info = stock.info
 
-            rows.append({
-
+           rows.append({
     "Ticker": ticker,
 
     "PE": info.get("trailingPE", 20),
@@ -72,14 +71,7 @@ def load_stock_data(csv_file):
     "Sector": (
         info.get("sector") or "Unknown"
     )
-
 })
-
-                "Sector": (
-                    info.get("sector") or "Unknown"
-                )
-
-            })
 
         except Exception:
             pass
