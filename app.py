@@ -108,6 +108,13 @@ elif universe == "S&P 500":
     df = load_stock_data("sp500.csv")
 
 else:
+
+    raw_russell = pd.read_csv("russell2000.csv")
+
+    st.write("Rows in russell2000.csv:", len(raw_russell))
+
+    st.dataframe(raw_russell.head())
+
     df = load_stock_data("russell2000.csv")
 if universe == "S&P 500":
     raw_sp500 = pd.read_csv("sp500.csv")
