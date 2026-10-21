@@ -104,13 +104,7 @@ elif universe == "S&P 500":
 
 elif universe == "Russell 2000":
 
-    tickers = pd.read_csv("russell2000.csv")
-
-    st.write("Russell tickers found:", len(tickers))
-
-    st.dataframe(tickers.head())
-
-    st.stop()
+    df = load_stock_data("russell2000.csv")
 
 else:
 
@@ -125,10 +119,6 @@ if len(df) == 0:
 
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
-)
-
-st.write(
-    f"Screened from {len(df)} companies."
 )
 
 st.caption(
