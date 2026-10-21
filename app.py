@@ -109,7 +109,12 @@ elif universe == "S&P 500":
 
 else:
 
-    raw_russell = pd.read_csv("russell2000.csv")
+    else:
+
+    with open("russell2000.csv", "r") as f:
+        st.text(f.read())
+
+    st.stop()
 
     st.write("Rows in russell2000.csv:", len(raw_russell))
 
