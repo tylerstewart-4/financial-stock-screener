@@ -547,7 +547,7 @@ if len(filtered_df) > 0:
         fig,
         use_container_width=True
     )
- # --------------------------------------------------
+# --------------------------------------------------
 # INVESTMENT CONCLUSION
 # --------------------------------------------------
 
@@ -558,42 +558,72 @@ if len(filtered_df) > 0:
     best_stock = filtered_df.iloc[0]
 
     st.write(
-        f"The highest-ranked company is {best_stock['Ticker']} "
-        f"with a score of {best_stock['Score']:.1f}."
+        f"Based on the current screening criteria, "
+        f"{best_stock['Ticker']} achieved the highest overall score "
+        f"of {best_stock['Score']:.1f} and is currently ranked as the "
+        f"strongest investment opportunity in the screened universe."
     )
 
     st.write(
-        f"This company passed {best_stock['CriteriaMet']} screening criteria "
-        f"and scored highly due to its profitability, valuation, growth profile, "
-        f"financial strength, and overall fundamentals."
+        f"The company successfully passed "
+        f"{best_stock['CriteriaMet']} of the available screening criteria "
+        f"and demonstrated a combination of profitability, financial strength, "
+        f"growth potential, and valuation that exceeded most competing companies."
+    )
+
+    st.write("### Why it ranked #1")
+
+    if best_stock["ROE"] >= 20:
+        st.write(
+            f"✅ Strong profitability with an ROE of "
+            f"{best_stock['ROE']:.2f}%."
+        )
+
+    if best_stock["RevenueGrowth"] >= 15:
+        st.write(
+            f"✅ Strong revenue growth of "
+            f"{best_stock['RevenueGrowth']:.2f}%."
+        )
+
+    if best_stock["DebtEquity"] <= 1:
+        st.write(
+            f"✅ Healthy balance sheet with Debt-to-Equity of "
+            f"{best_stock['DebtEquity']:.2f}."
+        )
+
+    if best_stock["CurrentRatio"] >= 1:
+        st.write(
+            f"✅ Acceptable liquidity with a Current Ratio of "
+            f"{best_stock['CurrentRatio']:.2f}."
+        )
+
+    if best_stock["PE"] > 0:
+        st.write(
+            f"✅ Valuation metric (PE Ratio) of "
+            f"{best_stock['PE']:.2f}."
+        )
+
+    st.write("### Key Statistics")
+
+    st.write(
+        f"""
+        • Sector: {best_stock['Sector']}  
+        • Market Capitalization: {best_stock['MarketCapBillions']:.2f} Billion  
+        • PE Ratio: {best_stock['PE']:.2f}  
+        • ROE: {best_stock['ROE']:.2f}%  
+        • Debt-to-Equity: {best_stock['DebtEquity']:.2f}  
+        • Current Ratio: {best_stock['CurrentRatio']:.2f}  
+        • Revenue Growth: {best_stock['RevenueGrowth']:.2f}%  
+        • Strength Score: {best_stock['StrengthScore']}  
+        • Criteria Met: {best_stock['CriteriaMet']}  
+        """
     )
 
     st.write(
-        f"Key metrics include:"
-    )
-
-    st.write(
-        f"• PE Ratio: {best_stock['PE']:.2f}"
-    )
-
-    st.write(
-        f"• ROE: {best_stock['ROE']:.2f}%"
-    )
-
-    st.write(
-        f"• Debt to Equity: {best_stock['DebtEquity']:.2f}"
-    )
-
-    st.write(
-        f"• Revenue Growth: {best_stock['RevenueGrowth']:.2f}%"
-    )
-
-    st.write(
-        f"• Market Cap: {best_stock['MarketCapBillions']:.2f} Billion"
-    )
-
-    st.write(
-        f"• Sector: {best_stock['Sector']}"
+        "This result should not be interpreted as investment advice. "
+        "The stock ranked highest because it best satisfied the chosen "
+        "screening parameters. Adjusting financial filters may produce "
+        "different recommendations and rankings."
     )
 # ---------------------------------------------------
 # DOWNLOAD
