@@ -44,30 +44,36 @@ def load_stock_data(csv_file):
 
             rows.append({
 
-                "Ticker": ticker,
+    "Ticker": ticker,
 
-                "PE": info.get("trailingPE", 0),
+    "PE": info.get("trailingPE", 20),
 
-                "ROE": (
-                    (info.get("returnOnEquity") or 0) * 100
-                ),
+    "ROE": (
+        (info.get("returnOnEquity") or 0.15) * 100
+    ),
 
-                "DebtEquity": (
-                    info.get("debtToEquity") or 0
-                ),
+    "DebtEquity": (
+        info.get("debtToEquity") or 1.5
+    ),
 
-                "CurrentRatio": (
-                    info.get("currentRatio") or 0
-                ),
+    "CurrentRatio": (
+        info.get("currentRatio") or 1.0
+    ),
 
-                "RevenueGrowth": (
-                    (info.get("revenueGrowth") or 0) * 100
-                ),
+    "RevenueGrowth": (
+        (info.get("revenueGrowth") or 0.05) * 100
+    ),
 
-                "MarketCapBillions": (
-                    (info.get("marketCap") or 0)
-                    / 1000000000
-                ),
+    "MarketCapBillions": (
+        (info.get("marketCap") or 1000000000)
+        / 1000000000
+    ),
+
+    "Sector": (
+        info.get("sector") or "Unknown"
+    )
+
+})
 
                 "Sector": (
                     info.get("sector") or "Unknown"
