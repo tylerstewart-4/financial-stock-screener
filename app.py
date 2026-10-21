@@ -26,45 +26,45 @@ def load_stock_data(csv_file):
         try:
 
             stock = yf.Ticker(ticker)
-
             info = stock.info
 
-           rows.append({
-    "Ticker": ticker,
-    "PE": info.get("trailingPE", 0),
+            rows.append({
+                "Ticker": ticker,
 
-    "ROE": (
-        info.get("returnOnEquity", 0) * 100
-        if info.get("returnOnEquity")
-        else 0
-    ),
+                "PE": info.get("trailingPE", 0),
 
-    "DebtEquity": info.get(
-        "debtToEquity",
-        0
-    ),
+                "ROE": (
+                    info.get("returnOnEquity", 0) * 100
+                    if info.get("returnOnEquity")
+                    else 0
+                ),
 
-    "CurrentRatio": info.get(
-        "currentRatio",
-        0
-    ),
+                "DebtEquity": info.get(
+                    "debtToEquity",
+                    0
+                ),
 
-    "RevenueGrowth": (
-        info.get("revenueGrowth", 0) * 100
-        if info.get("revenueGrowth")
-        else 0
-    ),
+                "CurrentRatio": info.get(
+                    "currentRatio",
+                    0
+                ),
 
-    "MarketCapBillions": (
-        info.get("marketCap", 0)
-        / 1000000000
-    ),
+                "RevenueGrowth": (
+                    info.get("revenueGrowth", 0) * 100
+                    if info.get("revenueGrowth")
+                    else 0
+                ),
 
-    "Sector": info.get(
-        "sector",
-        "Unknown"
-    )
-})
+                "MarketCapBillions": (
+                    info.get("marketCap", 0)
+                    / 1000000000
+                ),
+
+                "Sector": info.get(
+                    "sector",
+                    "Unknown"
+                )
+            })
 
         except Exception:
             pass
@@ -78,7 +78,21 @@ def load_stock_data(csv_file):
         "PE",
         "ROE",
         "DebtEquity",
-        "
+        "CurrentRatio",
+        "RevenueGrowth",
+        "MarketCapBillions"
+    ]
+
+    for col in numeric_cols:
+
+        if col in df.columns:
+
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
+            ).fillna(0)
+
+    return df
 # ---------------------------------------------------
 # DATA SOURCE
 # ---------------------------------------------------
