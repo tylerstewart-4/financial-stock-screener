@@ -39,39 +39,38 @@ def load_stock_data(csv_file):
         try:
 
             stock = yf.Ticker(ticker)
-
             info = stock.info
 
-           rows.append({
-    "Ticker": ticker,
+            rows.append({
+                "Ticker": ticker,
 
-    "PE": info.get("trailingPE", 20),
+                "PE": info.get("trailingPE", 20),
 
-    "ROE": (
-        (info.get("returnOnEquity") or 0.15) * 100
-    ),
+                "ROE": (
+                    (info.get("returnOnEquity") or 0.15) * 100
+                ),
 
-    "DebtEquity": (
-        info.get("debtToEquity") or 1.5
-    ),
+                "DebtEquity": (
+                    info.get("debtToEquity") or 1.5
+                ),
 
-    "CurrentRatio": (
-        info.get("currentRatio") or 1.0
-    ),
+                "CurrentRatio": (
+                    info.get("currentRatio") or 1.0
+                ),
 
-    "RevenueGrowth": (
-        (info.get("revenueGrowth") or 0.05) * 100
-    ),
+                "RevenueGrowth": (
+                    (info.get("revenueGrowth") or 0.05) * 100
+                ),
 
-    "MarketCapBillions": (
-        (info.get("marketCap") or 1000000000)
-        / 1000000000
-    ),
+                "MarketCapBillions": (
+                    (info.get("marketCap") or 1000000000)
+                    / 1000000000
+                ),
 
-    "Sector": (
-        info.get("sector") or "Unknown"
-    )
-})
+                "Sector": (
+                    info.get("sector") or "Unknown"
+                )
+            })
 
         except Exception:
             pass
@@ -79,7 +78,7 @@ def load_stock_data(csv_file):
     df = pd.DataFrame(rows)
 
     if len(df) == 0:
-        return pd.DataFrame()
+        return df
 
     numeric_cols = [
         "PE",
