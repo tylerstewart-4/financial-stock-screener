@@ -23,8 +23,12 @@ universe = st.sidebar.selectbox(
     ]
 )
 # ---------------------------------------------------
-# LOAD LIVE DATA
+# LOAD LIVE DATA (FINANCIAL MODELING PREP)
 # ---------------------------------------------------
+
+import requests
+
+API_KEY = "PUT_YOUR_NEW_FMP_API_KEY_HERE"
 
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
@@ -37,66 +41,42 @@ def load_stock_data(csv_file):
 
         try:
 
-            stock = yf.Ticker(ticker)
-            info = stock.info
+            profile_url = (
+                f"https://financialmodelingprep.com/api/v3/profile/"
+                f"{ticker}?apikey={API_KEY}"
+            )
+
+            profile_response = requests.get(
+                profile_url,
+                timeout=20
+            )
+
+            profile_data = profile_response.json()
+
+            if not isinstance(profile_data, list):
+                continue
+
+            if len(profile_data) == 0:
+                continue
+
+            profile = profile_data[0]
 
             rows.append({
 
                 "Ticker": ticker,
 
-                "PE": info.get("trailingPE", 0),
+                "PE": profile.get("pe", 0),
 
-                "ROE": (
-                    info.get("returnOnEquity", 0) * 100
-                    if info.get("returnOnEquity")
-                    else 0
-                ),
+                "ROE": 0,
 
-                "DebtEquity": info.get("debtToEquity", 0),
+                "DebtEquity": 0,
 
-                "CurrentRatio": info.get("currentRatio", 0),
+                "CurrentRatio": 0,
 
-                "RevenueGrowth": (
-                    info.get("revenueGrowth", 0) * 100
-                    if info.get("revenueGrowth")
-                    else 0
-                ),
+                "RevenueGrowth": 0,
 
                 "MarketCapBillions": (
-                    info.get("marketCap", 0) / 1_000_000_000
-                ),
-
-                "Sector": info.get(
-                    "sector",
-                    "Unknown"
-                )
-            })
-
-        except Exception:
-            pass
-
-    df = pd.DataFrame(rows)
-
-    if len(df) == 0:
-        return df
-
-    numeric_cols = [
-        "PE",
-        "ROE",
-        "DebtEquity",
-        "CurrentRatio",
-        "RevenueGrowth",
-        "MarketCapBillions"
-    ]
-
-    for col in numeric_cols:
-
-        df[col] = pd.to_numeric(
-            df[col],
-            errors="coerce"
-        ).fillna(0)
-
-    return df
+                    profile.get
 
 
 # ---------------------------------------------------
