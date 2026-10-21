@@ -400,18 +400,18 @@ scatter_df = filtered_df[
 if len(scatter_df) > 0:
 
     scatter = px.scatter(
-    filtered_df,
-    x="PE",
-    y="ROE",
-    color="Recommendation",
-    hover_name="Ticker",
-    title="ROE vs PE Analysis",
-    color_discrete_map={
-        "BUY": "#00C853",     # Green
-        "HOLD": "#2979FF",    # Bright Blue
-        "SELL": "#B71C1C"     # Dark Red
-    }
-)
+        scatter_df,
+        x="PE",
+        y="ROE",
+        color="Recommendation",
+        hover_name="Ticker",
+        title="ROE vs PE Analysis",
+        color_discrete_map={
+            "BUY": "#00C853",
+            "HOLD": "#1976D2",
+            "SELL": "#8B0000"
+        }
+    )
 
     scatter.update_layout(
         xaxis_title="PE Ratio",
