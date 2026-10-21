@@ -25,9 +25,10 @@ universe = st.sidebar.selectbox(
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
+
 import requests
 
-API_KEY = "YOUR_NEW_FMP_KEY"
+API_KEY = "YOUR_NEW_FMP_API_KEY"
 
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
@@ -45,32 +46,15 @@ def load_stock_data(csv_file):
                 f"{ticker}?apikey={API_KEY}"
             )
 
-            ratio_url = (
-                f"https://financialmodelingprep.com/api/v3/ratios-ttm/"
-                f"{ticker}?apikey={API_KEY}"
-            )
+            profile_data = requests.get(
+                profile_url,
+                timeout=20
+            ).json()
 
-            growth_url = (
-                f"https://financialmodelingprep.com/api/v3/financial-growth/"
-                f"{ticker}?limit=1&apikey={API_KEY}"
-            )
-
-            profile = requests.get(profile_url, timeout=20).json()
-            ratios = requests.get(ratio_url, timeout=20).json()
-            growth = requests.get(growth_url, timeout=20).json()
-
-            if not profile:
+            if not profile_data:
                 continue
 
-            profile = profile[0]
-
-            ratio = ratios[0] if isinstance(ratios, list) and len(ratios) > 0 else {}
-
-            growth_row = (
-                growth[0]
-                if isinstance(growth, list) and len(growth) > 0
-                else {}
-            )
+            profile = profile_data[0]
 
             rows.append({
 
@@ -78,25 +62,13 @@ def load_stock_data(csv_file):
 
                 "PE": profile.get("pe", 0),
 
-                "ROE": (
-                    ratio.get("returnOnEquityTTM", 0) * 100
-                    if ratio.get("returnOnEquityTTM")
-                    else 0
-                ),
+                "ROE": 0,
 
-                "DebtEquity": (
-                    ratio.get("debtEquityRatioTTM", 0)
-                ),
+                "DebtEquity": 0,
 
-                "CurrentRatio": (
-                    ratio.get("currentRatioTTM", 0)
-                ),
+                "CurrentRatio": 0,
 
-                "RevenueGrowth": (
-                    growth_row.get("revenueGrowth", 0) * 100
-                    if growth_row.get("revenueGrowth")
-                    else 0
-                ),
+                "RevenueGrowth": 0,
 
                 "MarketCapBillions": (
                     profile.get("mktCap", 0) / 1_000_000_000
@@ -108,8 +80,9 @@ def load_stock_data(csv_file):
                 )
             })
 
-        except:
-            pass
+        except Exception as e:
+
+            print(f"Failed {ticker}: {e}")
 
     df = pd.DataFrame(rows)
 
