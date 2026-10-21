@@ -26,71 +26,77 @@ universe = st.sidebar.selectbox(
 # LOAD LIVE DATA
 # ---------------------------------------------------
 
-import requests
-
-API_KEY = "QByDSMG5IDJ4gsSb0gAq7G12UzvKtag2"
-
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
-    try:
-        tickers = pd.read_csv(csv_file)
-
-    except Exception as e:
-
-        st.error(f"Could not read file: {csv_file}")
-        st.error(str(e))
-
-        return pd.DataFrame()
+    tickers = pd.read_csv(csv_file)
 
     rows = []
 
-        for ticker in tickers["Ticker"]:
+    for ticker in tickers["Ticker"]:
 
         try:
 
-            profile_url = (
-                f"https://financialmodelingprep.com/api/v3/profile/"
-                f"{ticker}?apikey={API_KEY}"
-            )
-
-            response = requests.get(
-                profile_url,
-                timeout=20
-            )
-
-            profile = response.json()
-
-            if not isinstance(profile, list):
-                st.write(f"Failed: {ticker}")
-                st.write(profile)
-                continue
-
-            if len(profile) == 0:
-                continue
-
-            profile = profile[0]
+            stock = yf.Ticker(ticker)
+            info = stock.info
 
             rows.append({
+
                 "Ticker": ticker,
-                "PE": profile.get("pe", 0),
-                "ROE": 0,
-                "DebtEquity": 0,
-                "CurrentRatio": 0,
-                "RevenueGrowth": 0,
-                "MarketCapBillions": (
-                    profile.get("mktCap", 0) / 1_000_000_000
+
+                "PE": info.get("trailingPE", 0),
+
+                "ROE": (
+                    info.get("returnOnEquity", 0) * 100
+                    if info.get("returnOnEquity")
+                    else 0
                 ),
-                "Sector": profile.get(
+
+                "DebtEquity": info.get("debtToEquity", 0),
+
+                "CurrentRatio": info.get("currentRatio", 0),
+
+                "RevenueGrowth": (
+                    info.get("revenueGrowth", 0) * 100
+                    if info.get("revenueGrowth")
+                    else 0
+                ),
+
+                "MarketCapBillions": (
+                    info.get("marketCap", 0) / 1_000_000_000
+                ),
+
+                "Sector": info.get(
                     "sector",
                     "Unknown"
                 )
             })
 
-        except Exception as e:
+        except Exception:
+            pass
 
-            st.write(f"Failed: {ticker}")
-            st.write(str(e))
+    df = pd.DataFrame(rows)
+
+    if len(df) == 0:
+        return df
+
+    numeric_cols = [
+        "PE",
+        "ROE",
+        "DebtEquity",
+        "CurrentRatio",
+        "RevenueGrowth",
+        "MarketCapBillions"
+    ]
+
+    for col in numeric_cols:
+
+        df[col] = pd.to_numeric(
+            df[col],
+            errors="coerce"
+        ).fillna(0)
+
+    return df
 
 
 # ---------------------------------------------------
