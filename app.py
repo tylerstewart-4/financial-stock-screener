@@ -23,13 +23,64 @@ universe = st.sidebar.selectbox(
 )
 
 # ---------------------------------------------------
-# LOAD DATA
+# LOAD LIVE DATA
 # ---------------------------------------------------
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
-    df = pd.read_csv(csv_file)
+    tickers = pd.read_csv(csv_file)
+
+    rows = []
+
+    for ticker in tickers["Ticker"]:
+
+        try:
+
+            stock = yf.Ticker(ticker)
+
+            info = stock.info
+
+            rows.append({
+
+                "Ticker": ticker,
+
+                "PE": info.get("trailingPE", 0),
+
+                "ROE": (
+                    (info.get("returnOnEquity") or 0) * 100
+                ),
+
+                "DebtEquity": (
+                    info.get("debtToEquity") or 0
+                ),
+
+                "CurrentRatio": (
+                    info.get("currentRatio") or 0
+                ),
+
+                "RevenueGrowth": (
+                    (info.get("revenueGrowth") or 0) * 100
+                ),
+
+                "MarketCapBillions": (
+                    (info.get("marketCap") or 0)
+                    / 1000000000
+                ),
+
+                "Sector": (
+                    info.get("sector") or "Unknown"
+                )
+
+            })
+
+        except Exception:
+            pass
+
+    df = pd.DataFrame(rows)
+
+    if len(df) == 0:
+        return pd.DataFrame()
 
     numeric_cols = [
         "PE",
@@ -42,42 +93,12 @@ def load_stock_data(csv_file):
 
     for col in numeric_cols:
 
-        if col in df.columns:
-
-            df[col] = pd.to_numeric(
-                df[col],
-                errors="coerce"
-            ).fillna(0)
+        df[col] = pd.to_numeric(
+            df[col],
+            errors="coerce"
+        ).fillna(0)
 
     return df
-
-
-if universe == "Custom Watchlist":
-
-    df = load_stock_data("tickers.csv")
-
-elif universe == "S&P 500":
-
-    df = load_stock_data("sp500.csv")
-
-elif universe == "Russell 2000":
-
-    df = load_stock_data("russell2000.csv")
-
-else:
-
-    st.error("Unknown universe selected.")
-    st.stop()
-
-
-if len(df) == 0:
-
-    st.error("No stock data loaded.")
-    st.stop()
-
-st.info(
-    f"Universe: {universe} | Companies Loaded: {len(df)}"
-)
 
 # ---------------------------------------------------
 # STRENGTH SCORE
