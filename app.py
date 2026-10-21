@@ -422,6 +422,9 @@ if len(scatter_df) > 0:
         scatter,
         use_container_width=True
     )
+  scatter.update_layout(
+    title_x=0.5
+)
 # --------------------------------------------------
 # SECTOR RANKINGS
 # --------------------------------------------------
