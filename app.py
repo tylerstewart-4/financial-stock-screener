@@ -263,39 +263,51 @@ df["CriteriaMet"] = df.apply(
     axis=1
 )
 
-# ---------------------------------------------------
+# --------------------------------------------------
 # SCORE
-# ---------------------------------------------------
+# --------------------------------------------------
 
 def calculate_score(row):
 
     score = 0
+
+    missing_data = 0
+
+    if row["PE"] == 0:
+        missing_data += 1
+
+    if row["ROE"] == 0:
+        missing_data += 1
+
+    if row["DebtEquity"] == 0:
+        missing_data += 1
+
+    if row["CurrentRatio"] == 0:
+        missing_data += 1
+
+    if row["RevenueGrowth"] == 0:
+        missing_data += 1
+
+
+    # ROE
 
     if row["ROE"] >= 30:
         score += 25
     elif row["ROE"] >= 20:
         score += 15
 
-    if row["PE"] <= 20:
+
+    # PE
+
+    if row["PE"] <= 20 and row["PE"] > 0:
         score += 25
-    elif row["PE"] <= 30:
+    elif row["PE"] <= 30 and row["PE"] > 0:
         score += 15
 
-    if row["DebtEquity"] <= 1:
-        score += 20
 
-    score += row["StrengthScore"] * 5
+    # Debt
 
-    if row["RevenueGrowth"] >= 15:
-        score += 15
-
-    return min(score, 100)
-
-
-df["Score"] = df.apply(
-    calculate_score,
-    axis=1
-)
+    if row["DebtEquity"] <= 1 and row["DebtEquity
 
 # ---------------------------------------------------
 # RECOMMENDATIONS
