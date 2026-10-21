@@ -108,16 +108,32 @@ elif universe == "S&P 500":
     df = load_stock_data("sp500.csv")
 
 else:
-
     import os
 
-    st.write("File exists:", os.path.exists("russell2000.csv"))
+    st.write(
+        "Russell file exists:",
+        os.path.exists("russell2000.csv")
+    )
 
-    with open("russell2000.csv", "r") as f:
-        st.text(f.read())
+    try:
+        raw_russell = pd.read_csv("russell2000.csv")
 
-    st.stop()
+        st.write(
+            "Russell rows:",
+            len(raw_russell)
+        )
 
+        st.dataframe(raw_russell.head())
+
+    except Exception as e:
+
+        st.error(
+            f"Russell file error: {e}"
+        )
+
+        st.stop()
+
+    df = load_stock_data("russell2000.csv")
 
     df = load_stock_data("russell2000.csv")
 if universe == "S&P 500":
