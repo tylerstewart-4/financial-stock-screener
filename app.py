@@ -29,42 +29,42 @@ def load_stock_data(csv_file):
 
             info = stock.info
 
-            rows.append({
+           rows.append({
+    "Ticker": ticker,
+    "PE": info.get("trailingPE", 0),
 
-                "Ticker": ticker,
+    "ROE": (
+        info.get("returnOnEquity", 0) * 100
+        if info.get("returnOnEquity")
+        else 0
+    ),
 
-                "PE": info.get("trailingPE", 0),
+    "DebtEquity": info.get(
+        "debtToEquity",
+        0
+    ),
 
-                "ROE": (
-                    info.get("returnOnEquity", 0) * 100
-                    if info.get("returnOnEquity")
-                    else 0
-                ),
+    "CurrentRatio": info.get(
+        "currentRatio",
+        0
+    ),
 
-                "DebtEquity": (
-                    info.get("debtToEquity", 0)
-                ),
+    "RevenueGrowth": (
+        info.get("revenueGrowth", 0) * 100
+        if info.get("revenueGrowth")
+        else 0
+    ),
 
-                "CurrentRatio": (
-                    info.get("currentRatio", 0)
-                ),
+    "MarketCapBillions": (
+        info.get("marketCap", 0)
+        / 1000000000
+    ),
 
-                "RevenueGrowth": (
-                    info.get("revenueGrowth", 0) * 100
-                    if info.get("revenueGrowth")
-                    else 0
-                ),
-
-                "MarketCapBillions": (
-                    info.get("marketCap", 0)
-                    / 1000000000
-                ),
-
-                "Sector": (
-                    info.get("sector", "Unknown")
-                )
-
-            })
+    "Sector": info.get(
+        "sector",
+        "Unknown"
+    )
+})
 
         except Exception:
             pass
