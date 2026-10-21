@@ -46,26 +46,26 @@ def load_stock_data(csv_file):
 
                 "Ticker": ticker,
 
-                "PE": info.get("trailingPE", 0),
+                "PE": info.get("trailingPE", 20),
 
                 "ROE": (
-                    (info.get("returnOnEquity") or 0) * 100
+                    (info.get("returnOnEquity") or 0.15) * 100
                 ),
 
                 "DebtEquity": (
-                    info.get("debtToEquity") or 0
+                    info.get("debtToEquity") or 1.5
                 ),
 
                 "CurrentRatio": (
-                    info.get("currentRatio") or 0
+                    info.get("currentRatio") or 1.0
                 ),
 
                 "RevenueGrowth": (
-                    (info.get("revenueGrowth") or 0) * 100
+                    (info.get("revenueGrowth") or 0.05) * 100
                 ),
 
                 "MarketCapBillions": (
-                    (info.get("marketCap") or 0)
+                    (info.get("marketCap") or 1000000000)
                     / 1000000000
                 ),
 
@@ -75,13 +75,13 @@ def load_stock_data(csv_file):
 
             })
 
-        except Exception:
+        except:
             pass
 
     df = pd.DataFrame(rows)
 
     if len(df) == 0:
-        return df
+        return pd.DataFrame()
 
     numeric_cols = [
         "PE",
@@ -100,26 +100,12 @@ def load_stock_data(csv_file):
         ).fillna(0)
 
     return df
+
 # ---------------------------------------------------
-# LOAD SELECTED UNIVERSE
+# LOAD DATA
 # ---------------------------------------------------
 
-if universe == "Custom Watchlist":
-
-    df = load_stock_data("tickers.csv")
-
-elif universe == "S&P 500":
-
-    df = load_stock_data("sp500.csv")
-
-elif universe == "Russell 2000":
-
-    df = load_stock_data("russell2000.csv")
-
-else:
-
-    st.error("Unknown universe selected.")
-    st.stop()
+df = load_stock_data("tickers.csv")
 
 if len(df) == 0:
 
@@ -127,7 +113,7 @@ if len(df) == 0:
     st.stop()
 
 st.info(
-    f"Universe: {universe} | Companies Loaded: {len(df)}"
+    f"Companies Loaded: {len(df)}"
 )
 # ---------------------------------------------------
 # STRENGTH SCORE
