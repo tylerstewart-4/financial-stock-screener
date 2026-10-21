@@ -27,7 +27,7 @@ universe = st.sidebar.selectbox(
 # LOAD LIVE DATA
 # ---------------------------------------------------
 
-@st.cache_data(ttl=1)
+@st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
@@ -106,19 +106,12 @@ if universe == "Custom Watchlist":
 
 elif universe == "S&P 500":
     df = load_stock_data("sp500.csv")
-    raw_sp500 = pd.read_csv("sp500.csv")
 
-st.write("Rows in sp500.csv:", len(raw_sp500))
-st.write(raw_sp500.head())
 else:
     df = load_stock_data("russell2000.csv")
 if universe == "S&P 500":
     raw_sp500 = pd.read_csv("sp500.csv")
 
-    st.write("Rows in sp500.csv:", len(raw_sp500))
-
-    st.write("First five rows:")
-    st.dataframe(raw_sp500.head())
 if len(df) == 0:
     st.error("No stock data loaded.")
     st.stop()
