@@ -109,16 +109,15 @@ elif universe == "S&P 500":
 
 else:
 
-    else:
+    import os
+
+    st.write("File exists:", os.path.exists("russell2000.csv"))
 
     with open("russell2000.csv", "r") as f:
         st.text(f.read())
 
     st.stop()
 
-    st.write("Rows in russell2000.csv:", len(raw_russell))
-
-    st.dataframe(raw_russell.head())
 
     df = load_stock_data("russell2000.csv")
 if universe == "S&P 500":
