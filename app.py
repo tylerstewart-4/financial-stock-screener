@@ -42,7 +42,6 @@ def load_stock_data(csv_file):
             info = stock.info
 
             rows.append({
-
                 "Ticker": ticker,
 
                 "PE": info.get("trailingPE", 0),
@@ -71,7 +70,6 @@ def load_stock_data(csv_file):
                     "sector",
                     "Unknown"
                 )
-
             })
 
         except:
