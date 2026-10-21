@@ -11,18 +11,10 @@ st.set_page_config(
 st.title("Industry Stock Screener")
 
 # ---------------------------------------------------
-# STOCK UNIVERSE
+# DATA SOURCE
 # ---------------------------------------------------
 
-universe = st.sidebar.selectbox(
-    "Stock Universe",
-    [
-        "Custom Watchlist",
-        "S&P 500",
-        "Russell 2000"
-    ]
-)
-
+df = load_stock_data("tickers.csv")
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
@@ -46,26 +38,26 @@ def load_stock_data(csv_file):
 
                 "Ticker": ticker,
 
-                "PE": info.get("trailingPE", 20),
+                "PE": info.get("trailingPE", 0),
 
                 "ROE": (
-                    (info.get("returnOnEquity") or 0.15) * 100
+                    (info.get("returnOnEquity") or 0) * 100
                 ),
 
                 "DebtEquity": (
-                    info.get("debtToEquity") or 1.5
+                    info.get("debtToEquity") or 0
                 ),
 
                 "CurrentRatio": (
-                    info.get("currentRatio") or 1.0
+                    info.get("currentRatio") or 0
                 ),
 
                 "RevenueGrowth": (
-                    (info.get("revenueGrowth") or 0.05) * 100
+                    (info.get("revenueGrowth") or 0) * 100
                 ),
 
                 "MarketCapBillions": (
-                    (info.get("marketCap") or 1000000000)
+                    (info.get("marketCap") or 0)
                     / 1000000000
                 ),
 
@@ -75,7 +67,7 @@ def load_stock_data(csv_file):
 
             })
 
-        except:
+        except Exception:
             pass
 
     df = pd.DataFrame(rows)
@@ -94,10 +86,12 @@ def load_stock_data(csv_file):
 
     for col in numeric_cols:
 
-        df[col] = pd.to_numeric(
-            df[col],
-            errors="coerce"
-        ).fillna(0)
+        if col in df.columns:
+
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
+            ).fillna(0)
 
     return df
 
@@ -107,6 +101,9 @@ def load_stock_data(csv_file):
 
 df = load_stock_data("tickers.csv")
 
+st.write("Rows loaded:", len(df))
+st.dataframe(df.head(10))
+
 if len(df) == 0:
 
     st.error("No stock data loaded.")
@@ -115,9 +112,17 @@ if len(df) == 0:
 st.info(
     f"Companies Loaded: {len(df)}"
 )
-# ---------------------------------------------------
+st.subheader("DEBUG")
+
+st.write("Columns:")
+st.write(df.columns.tolist())
+
+st.write("First 10 rows:")
+st.dataframe(df.head(10))
+
+# --------------------------------------------------
 # STRENGTH SCORE
-# ---------------------------------------------------
+# --------------------------------------------------
 
 def calculate_strength_score(row):
 
@@ -142,6 +147,12 @@ def calculate_strength_score(row):
         score += 1
 
     return score
+
+
+df["StrengthScore"] = df.apply(
+    calculate_strength_score,
+    axis=1
+)
 
 # ---------------------------------------------------
 # INDUSTRY FILTER
