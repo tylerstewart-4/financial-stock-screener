@@ -123,35 +123,25 @@ def calculate_strength_score(row):
 
     score = 0
 
-    if row["ROE"] >= 20:
+    if row["PE"] <= 20:
         score += 3
-    elif row["ROE"] >= 10:
+    elif row["PE"] <= 30:
         score += 2
-    elif row["ROE"] > 0:
+
+    if row["ROE"] >= 20:
+        score += 2
+    elif row["ROE"] >= 10:
         score += 1
+
+    if row["MarketCapBillions"] <= 20:
+        score += 2
 
     if row["RevenueGrowth"] >= 15:
         score += 2
     elif row["RevenueGrowth"] >= 5:
         score += 1
 
-    if row["CurrentRatio"] >= 2:
-        score += 2
-    elif row["CurrentRatio"] >= 1:
-        score += 1
-
-    if row["DebtEquity"] <= 1:
-        score += 2
-    elif row["DebtEquity"] <= 2:
-        score += 1
-
     return score
-
-
-df["StrengthScore"] = df.apply(
-    calculate_strength_score,
-    axis=1
-)
 
 # ---------------------------------------------------
 # INDUSTRY FILTER
