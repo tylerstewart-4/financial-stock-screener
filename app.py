@@ -389,7 +389,92 @@ discovery_df = filtered_df[
 ]
 
 st.dataframe(discovery_df.head(10))
+# --------------------------------------------------
+# TOP BUYS
+# --------------------------------------------------
 
+st.subheader("🏆 Top 10 Buy Opportunities")
+
+top_buys = filtered_df[
+    filtered_df["Recommendation"] == "BUY"
+].head(10)
+
+st.dataframe(top_buys)
+# --------------------------------------------------
+# TOP SELLS
+# --------------------------------------------------
+
+st.subheader("⚠️ Top 10 Sell Opportunities")
+
+top_sells = filtered_df[
+    filtered_df["Recommendation"] == "SELL"
+].head(10)
+
+st.dataframe(top_sells)
+# --------------------------------------------------
+# PIE CHART
+# --------------------------------------------------
+
+if len(filtered_df) > 0:
+
+    fig = px.pie(
+        filtered_df,
+        names="Recommendation",
+        title="Buy / Hold / Sell Distribution"
+    )
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+ # --------------------------------------------------
+# INVESTMENT CONCLUSION
+# --------------------------------------------------
+
+st.subheader("📝 Investment Conclusion")
+
+if len(filtered_df) > 0:
+
+    best_stock = filtered_df.iloc[0]
+
+    st.write(
+        f"The highest-ranked company is {best_stock['Ticker']} "
+        f"with a score of {best_stock['Score']:.1f}."
+    )
+
+    st.write(
+        f"This company passed {best_stock['CriteriaMet']} screening criteria "
+        f"and scored highly due to its profitability, valuation, growth profile, "
+        f"financial strength, and overall fundamentals."
+    )
+
+    st.write(
+        f"Key metrics include:"
+    )
+
+    st.write(
+        f"• PE Ratio: {best_stock['PE']:.2f}"
+    )
+
+    st.write(
+        f"• ROE: {best_stock['ROE']:.2f}%"
+    )
+
+    st.write(
+        f"• Debt to Equity: {best_stock['DebtEquity']:.2f}"
+    )
+
+    st.write(
+        f"• Revenue Growth: {best_stock['RevenueGrowth']:.2f}%"
+    )
+
+    st.write(
+        f"• Market Cap: {best_stock['MarketCapBillions']:.2f} Billion"
+    )
+
+    st.write(
+        f"• Sector: {best_stock['Sector']}"
+    )
 # ---------------------------------------------------
 # DOWNLOAD
 # ---------------------------------------------------
