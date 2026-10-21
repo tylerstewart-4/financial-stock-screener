@@ -43,7 +43,6 @@ def load_stock_data(csv_file):
 
             rows.append({
                 "Ticker": ticker,
-
                 "PE": info.get("trailingPE", 0),
 
                 "ROE": (
@@ -90,7 +89,6 @@ def load_stock_data(csv_file):
     ]
 
     for col in numeric_cols:
-
         df[col] = pd.to_numeric(
             df[col],
             errors="coerce"
