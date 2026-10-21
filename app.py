@@ -358,12 +358,8 @@ filtered_df = filtered_df.sort_values(
 )
 
 st.success(
-    f"{len(filtered_df)} companies passed the current screen "
-    f"({round(len(filtered_df) / len(df) * 100, 1)}%)."
-)
-
-st.write(
-    f"Screened from {len(df)} total companies."
+    f"{len(filtered_df)} of {len(df)} companies passed the screen "
+    f"({round(len(filtered_df)/len(df)*100,1)}%)."
 )
 # ---------------------------------------------------
 # DASHBOARD
