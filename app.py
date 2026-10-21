@@ -106,7 +106,10 @@ if universe == "Custom Watchlist":
 
 elif universe == "S&P 500":
     df = load_stock_data("sp500.csv")
+    raw_sp500 = pd.read_csv("sp500.csv")
 
+st.write("Rows in sp500.csv:", len(raw_sp500))
+st.write(raw_sp500.head())
 else:
     df = load_stock_data("russell2000.csv")
 if universe == "S&P 500":
