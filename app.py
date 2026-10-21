@@ -27,7 +27,7 @@ universe = st.sidebar.selectbox(
 # LOAD LIVE DATA
 # ---------------------------------------------------
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
@@ -39,37 +39,40 @@ def load_stock_data(csv_file):
         try:
 
             stock = yf.Ticker(ticker)
+
             info = stock.info
 
             rows.append({
+
                 "Ticker": ticker,
 
-                "PE": info.get("trailingPE", 20),
+                "PE": info.get("trailingPE", 0),
 
                 "ROE": (
-                    (info.get("returnOnEquity") or 0.15) * 100
+                    (info.get("returnOnEquity") or 0) * 100
                 ),
 
                 "DebtEquity": (
-                    info.get("debtToEquity") or 1.5
+                    info.get("debtToEquity") or 0
                 ),
 
                 "CurrentRatio": (
-                    info.get("currentRatio") or 1.0
+                    info.get("currentRatio") or 0
                 ),
 
                 "RevenueGrowth": (
-                    (info.get("revenueGrowth") or 0.05) * 100
+                    (info.get("revenueGrowth") or 0) * 100
                 ),
 
                 "MarketCapBillions": (
-                    (info.get("marketCap") or 1000000000)
+                    (info.get("marketCap") or 0)
                     / 1000000000
                 ),
 
                 "Sector": (
                     info.get("sector") or "Unknown"
                 )
+
             })
 
         except Exception:
