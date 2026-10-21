@@ -383,13 +383,24 @@ discovery_df = filtered_df[
 
 st.dataframe(discovery_df.head(10))
 # --------------------------------------------------
-# CHARTS
+# CLEAN SCATTER DATA
 # --------------------------------------------------
 
-if len(filtered_df) > 0:
+scatter_df = filtered_df[
+    (filtered_df["PE"] >= 0)
+    & (filtered_df["PE"] <= 100)
+    & (filtered_df["ROE"] >= -50)
+    & (filtered_df["ROE"] <= 100)
+]
 
-    fig = px.scatter(
-        filtered_df,
+# --------------------------------------------------
+# SCATTER PLOT
+# --------------------------------------------------
+
+if len(scatter_df) > 0:
+
+    scatter = px.scatter(
+        scatter_df,
         x="PE",
         y="ROE",
         color="Recommendation",
@@ -397,8 +408,13 @@ if len(filtered_df) > 0:
         title="ROE vs PE Analysis"
     )
 
+    scatter.update_layout(
+        xaxis_title="PE Ratio",
+        yaxis_title="ROE (%)"
+    )
+
     st.plotly_chart(
-        fig,
+        scatter,
         use_container_width=True
     )
 # --------------------------------------------------
