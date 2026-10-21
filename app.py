@@ -107,9 +107,6 @@ df = df.drop_duplicates(
 
 df = load_stock_data("tickers.csv")
 
-st.write("Rows loaded:", len(df))
-st.dataframe(df.head(10))
-
 if len(df) == 0:
 
     st.error("No stock data loaded.")
