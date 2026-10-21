@@ -31,7 +31,9 @@ universe = st.sidebar.selectbox(
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
-
+st.write(
+    f"Tickers found in {csv_file}: {len(tickers)}"
+)
     rows = []
 
     for ticker in tickers["Ticker"]:
