@@ -28,7 +28,7 @@ universe = st.sidebar.selectbox(
 
 import requests
 
-API_KEY = "YOUR_NEW_FMP_API_KEY"
+API_KEY = "QByDSMG5IDJ4gsSb0gAq7G12UzvKtag2"
 
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
