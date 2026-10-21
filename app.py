@@ -27,7 +27,7 @@ universe = st.sidebar.selectbox(
 # LOAD LIVE DATA
 # ---------------------------------------------------
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=1)
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
