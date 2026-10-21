@@ -519,7 +519,17 @@ if len(filtered_df) > 0:
     fig = px.pie(
         filtered_df,
         names="Recommendation",
-        title="Buy / Hold / Sell Distribution"
+        title="Buy / Hold / Sell Distribution",
+        color="Recommendation",
+        color_discrete_map={
+            "BUY": "#00C853",   # Green
+            "HOLD": "#1976D2",  # Blue
+            "SELL": "#8B0000"   # Dark Red
+        }
+    )
+
+    fig.update_traces(
+        textinfo="percent+label"
     )
 
     st.plotly_chart(
