@@ -31,9 +31,7 @@ universe = st.sidebar.selectbox(
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
-st.write(
-    f"Tickers found in {csv_file}: {len(tickers)}"
-)
+
     rows = []
 
     for ticker in tickers["Ticker"]:
@@ -44,7 +42,9 @@ st.write(
             info = stock.info
 
             rows.append({
+
                 "Ticker": ticker,
+
                 "PE": info.get("trailingPE", 0),
 
                 "ROE": (
@@ -71,6 +71,7 @@ st.write(
                     "sector",
                     "Unknown"
                 )
+
             })
 
         except:
@@ -91,6 +92,7 @@ st.write(
     ]
 
     for col in numeric_cols:
+
         df[col] = pd.to_numeric(
             df[col],
             errors="coerce"
