@@ -63,21 +63,26 @@ def load_stock_data(csv_file):
 
             rows.append({
 
-                "Ticker": ticker,
+    "Ticker": ticker,
 
-                "PE": profile.get("pe", 0),
+    "PE": profile.get("pe", 0),
 
-                "ROE": 0,
+    "ROE": 0,
 
-                "DebtEquity": 0,
+    "DebtEquity": 0,
 
-                "CurrentRatio": 0,
+    "CurrentRatio": 0,
 
-                "RevenueGrowth": 0,
+    "RevenueGrowth": 0,
 
-                "MarketCapBillions": (
-                    profile.get
+    "MarketCapBillions": profile.get("mktCap", 0) / 1000000000,
 
+    "Sector": profile.get(
+        "sector",
+        "Unknown"
+    )
+
+})
 
 # ---------------------------------------------------
 # LOAD SELECTED UNIVERSE
