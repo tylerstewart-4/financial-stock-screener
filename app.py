@@ -98,7 +98,9 @@ def load_stock_data(csv_file):
 # ---------------------------------------------------
 
 df = load_stock_data("tickers.csv")
-
+df = df.drop_duplicates(
+    subset=["Ticker"]
+)
 # ---------------------------------------------------
 # LOAD DATA
 # ---------------------------------------------------
