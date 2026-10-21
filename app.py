@@ -113,7 +113,13 @@ elif universe == "S&P 500":
 
 elif universe == "Russell 2000":
 
-    df = load_stock_data("russell2000.csv")
+    tickers = pd.read_csv("russell2000.csv")
+
+    st.write("Russell tickers found:", len(tickers))
+
+    st.dataframe(tickers.head())
+
+    st.stop()
 
 else:
 
