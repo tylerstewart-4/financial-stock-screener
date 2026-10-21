@@ -33,7 +33,15 @@ API_KEY = "QByDSMG5IDJ4gsSb0gAq7G12UzvKtag2"
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
-    tickers = pd.read_csv(csv_file)
+    try:
+        tickers = pd.read_csv(csv_file)
+
+    except Exception as e:
+
+        st.error(f"Could not read file: {csv_file}")
+        st.error(str(e))
+
+        return pd.DataFrame()
 
     rows = []
 
@@ -46,15 +54,17 @@ def load_stock_data(csv_file):
                 f"{ticker}?apikey={API_KEY}"
             )
 
-            profile_data = requests.get(
+            response = requests.get(
                 profile_url,
                 timeout=20
-            ).json()
+            )
 
-            if not profile_data:
+            profile = response.json()
+
+            if not profile:
                 continue
 
-            profile = profile_data[0]
+            profile = profile[0]
 
             rows.append({
 
@@ -71,39 +81,30 @@ def load_stock_data(csv_file):
                 "RevenueGrowth": 0,
 
                 "MarketCapBillions": (
-                    profile.get("mktCap", 0) / 1_000_000_000
+                    profile.get("mktCap", 0)
+                    / 1_000_000_000
                 ),
 
                 "Sector": profile.get(
                     "sector",
                     "Unknown"
                 )
+
             })
 
         except Exception as e:
 
-            print(f"Failed {ticker}: {e}")
+            st.write(
+                f"Failed: {ticker}"
+            )
+
+            st.write(str(e))
 
     df = pd.DataFrame(rows)
 
-    if len(df) == 0:
-        return df
-
-    numeric_cols = [
-        "PE",
-        "ROE",
-        "DebtEquity",
-        "CurrentRatio",
-        "RevenueGrowth",
-        "MarketCapBillions"
-    ]
-
-    for col in numeric_cols:
-
-        df[col] = pd.to_numeric(
-            df[col],
-            errors="coerce"
-        ).fillna(0)
+    st.write(
+        f"Rows collected: {len(rows)}"
+    )
 
     return df
 
