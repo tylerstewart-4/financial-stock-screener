@@ -165,67 +165,81 @@ industry = st.sidebar.selectbox(
 
 st.sidebar.header("Financial Filters")
 
+if st.sidebar.button("Reset Filters"):
+
+    st.session_state.max_pe = 50
+    st.session_state.min_roe = 5
+    st.session_state.max_de = 3.0
+    st.session_state.min_strength = 1
+    st.session_state.min_growth = -5
+    st.session_state.min_current = 0.0
+    st.session_state.max_marketcap = 5000
+    st.session_state.discovery_cap = 20
+    st.session_state.min_criteria = 3
+
+    st.rerun()
+
 max_pe = st.sidebar.slider(
     "Maximum PE",
     1,
     100,
-    50
+    key="max_pe"
 )
 
 min_roe = st.sidebar.slider(
     "Minimum ROE",
     0,
     100,
-    5
+    key="min_roe"
 )
 
 max_de = st.sidebar.slider(
     "Maximum Debt to Equity",
     0.0,
     5.0,
-    3.0
+    key="max_de"
 )
 
 min_strength = st.sidebar.slider(
     "Minimum Strength Score",
     0,
     9,
-    1
+    key="min_strength"
 )
 
 min_growth = st.sidebar.slider(
     "Minimum Revenue Growth (%)",
     -20,
     50,
-    -5
+    key="min_growth"
 )
 
 min_current = st.sidebar.slider(
     "Minimum Current Ratio",
     0.0,
     5.0,
-    0.0
+    key="min_current"
 )
 
 max_marketcap = st.sidebar.slider(
     "Maximum Market Cap ($ Billions)",
     1,
     5000,
-    5000
+    key="max_marketcap"
 )
 
 discovery_cap = st.sidebar.slider(
     "Discovery Market Cap Limit ($ Billions)",
     1,
     100,
-    20
+    key="discovery_cap"
 )
 
 min_criteria = st.sidebar.slider(
     "Minimum Criteria Met",
     1,
     6,
-    3
+    key="min_criteria"
 )
 
 # ---------------------------------------------------
