@@ -26,7 +26,6 @@ universe = st.sidebar.selectbox(
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
-
 @st.cache_data(ttl=3600)
 def load_stock_data(csv_file):
 
@@ -44,27 +43,21 @@ def load_stock_data(csv_file):
             rows.append({
                 "Ticker": ticker,
                 "PE": info.get("trailingPE", 0),
-
                 "ROE": (
                     info.get("returnOnEquity", 0) * 100
                     if info.get("returnOnEquity")
                     else 0
                 ),
-
                 "DebtEquity": info.get("debtToEquity", 0),
-
                 "CurrentRatio": info.get("currentRatio", 0),
-
                 "RevenueGrowth": (
                     info.get("revenueGrowth", 0) * 100
                     if info.get("revenueGrowth")
                     else 0
                 ),
-
                 "MarketCapBillions": (
                     info.get("marketCap", 0) / 1_000_000_000
                 ),
-
                 "Sector": info.get(
                     "sector",
                     "Unknown"
@@ -89,6 +82,7 @@ def load_stock_data(csv_file):
     ]
 
     for col in numeric_cols:
+
         df[col] = pd.to_numeric(
             df[col],
             errors="coerce"
