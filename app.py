@@ -45,63 +45,52 @@ def load_stock_data(csv_file):
 
     rows = []
 
-    for ticker in tickers["Ticker"]:
+        for ticker in tickers["Ticker"]:
 
-          try:
+        try:
 
-        profile_url = (
-            f"https://financialmodelingprep.com/api/v3/profile/"
-            f"{ticker}?apikey={API_KEY}"
-        )
-
-        response = requests.get(
-            profile_url,
-            timeout=20
-        )
-
-        profile = response.json()
-
-        if not isinstance(profile, list):
-            st.write(f"Failed: {ticker}")
-            st.write(profile)
-            continue
-
-        if len(profile) == 0:
-            st.write(f"Empty response: {ticker}")
-            continue
-
-        profile = profile[0]
-
-        rows.append({
-
-            "Ticker": ticker,
-
-            "PE": profile.get("pe", 0),
-
-            "ROE": 0,
-
-            "DebtEquity": 0,
-
-            "CurrentRatio": 0,
-
-            "RevenueGrowth": 0,
-
-            "MarketCapBillions": (
-                profile.get("mktCap", 0)
-                / 1_000_000_000
-            ),
-
-            "Sector": profile.get(
-                "sector",
-                "Unknown"
+            profile_url = (
+                f"https://financialmodelingprep.com/api/v3/profile/"
+                f"{ticker}?apikey={API_KEY}"
             )
 
-        })
+            response = requests.get(
+                profile_url,
+                timeout=20
+            )
 
-    except Exception as e:
+            profile = response.json()
 
-        st.write(f"Failed: {ticker}")
-        st.write(str(e))
+            if not isinstance(profile, list):
+                st.write(f"Failed: {ticker}")
+                st.write(profile)
+                continue
+
+            if len(profile) == 0:
+                continue
+
+            profile = profile[0]
+
+            rows.append({
+                "Ticker": ticker,
+                "PE": profile.get("pe", 0),
+                "ROE": 0,
+                "DebtEquity": 0,
+                "CurrentRatio": 0,
+                "RevenueGrowth": 0,
+                "MarketCapBillions": (
+                    profile.get("mktCap", 0) / 1_000_000_000
+                ),
+                "Sector": profile.get(
+                    "sector",
+                    "Unknown"
+                )
+            })
+
+        except Exception as e:
+
+            st.write(f"Failed: {ticker}")
+            st.write(str(e))
 
 
 # ---------------------------------------------------
