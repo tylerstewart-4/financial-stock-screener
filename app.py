@@ -36,28 +36,32 @@ def load_stock_data(csv_file):
                 "PE": info.get("trailingPE", 0),
 
                 "ROE": (
-                    (info.get("returnOnEquity") or 0) * 100
+                    info.get("returnOnEquity", 0) * 100
+                    if info.get("returnOnEquity")
+                    else 0
                 ),
 
                 "DebtEquity": (
-                    info.get("debtToEquity") or 0
+                    info.get("debtToEquity", 0)
                 ),
 
                 "CurrentRatio": (
-                    info.get("currentRatio") or 0
+                    info.get("currentRatio", 0)
                 ),
 
                 "RevenueGrowth": (
-                    (info.get("revenueGrowth") or 0) * 100
+                    info.get("revenueGrowth", 0) * 100
+                    if info.get("revenueGrowth")
+                    else 0
                 ),
 
                 "MarketCapBillions": (
-                    (info.get("marketCap") or 0)
+                    info.get("marketCap", 0)
                     / 1000000000
                 ),
 
                 "Sector": (
-                    info.get("sector") or "Unknown"
+                    info.get("sector", "Unknown")
                 )
 
             })
@@ -74,21 +78,7 @@ def load_stock_data(csv_file):
         "PE",
         "ROE",
         "DebtEquity",
-        "CurrentRatio",
-        "RevenueGrowth",
-        "MarketCapBillions"
-    ]
-
-    for col in numeric_cols:
-
-        if col in df.columns:
-
-            df[col] = pd.to_numeric(
-                df[col],
-                errors="coerce"
-            ).fillna(0)
-
-    return df
+        "
 # ---------------------------------------------------
 # DATA SOURCE
 # ---------------------------------------------------
