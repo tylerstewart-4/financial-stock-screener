@@ -37,8 +37,7 @@ def load_stock_data(csv_file):
         try:
 
             stock = yf.Ticker(ticker)
-            fast = stock.fast_info
-
+            info = stock.info
             rows.append({
                 "Ticker": ticker,
                 "PE": info.get("trailingPE", 0),
