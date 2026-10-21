@@ -102,49 +102,35 @@ def load_stock_data(csv_file):
 # ---------------------------------------------------
 
 if universe == "Custom Watchlist":
+
     df = load_stock_data("tickers.csv")
 
 elif universe == "S&P 500":
+
     df = load_stock_data("sp500.csv")
 
+elif universe == "Russell 2000":
+
+    df = load_stock_data("russell2000.csv")
+
 else:
-    import os
 
-    st.write(
-        "Russell file exists:",
-        os.path.exists("russell2000.csv")
-    )
+    st.error("Unknown universe selected.")
+    st.stop()
 
-    try:
-        raw_russell = pd.read_csv("russell2000.csv")
-
-        st.write(
-            "Russell rows:",
-            len(raw_russell)
-        )
-
-        st.dataframe(raw_russell.head())
-
-    except Exception as e:
-
-        st.error(
-            f"Russell file error: {e}"
-        )
-
-        st.stop()
-
-    df = load_stock_data("russell2000.csv")
-
-    df = load_stock_data("russell2000.csv")
-if universe == "S&P 500":
-    raw_sp500 = pd.read_csv("sp500.csv")
 
 if len(df) == 0:
+
     st.error("No stock data loaded.")
     st.stop()
 
+
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
+)
+
+st.caption(
+    f"Analyzing {len(df)} companies using live Yahoo Finance data."
 )
 
 # ---------------------------------------------------
