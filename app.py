@@ -99,7 +99,35 @@ def load_stock_data(csv_file):
         ).fillna(0)
 
     return df
+# ---------------------------------------------------
+# LOAD SELECTED UNIVERSE
+# ---------------------------------------------------
 
+if universe == "Custom Watchlist":
+
+    df = load_stock_data("tickers.csv")
+
+elif universe == "S&P 500":
+
+    df = load_stock_data("sp500.csv")
+
+elif universe == "Russell 2000":
+
+    df = load_stock_data("russell2000.csv")
+
+else:
+
+    st.error("Unknown universe selected.")
+    st.stop()
+
+if len(df) == 0:
+
+    st.error("No stock data loaded.")
+    st.stop()
+
+st.info(
+    f"Universe: {universe} | Companies Loaded: {len(df)}"
+)
 # ---------------------------------------------------
 # STRENGTH SCORE
 # ---------------------------------------------------
