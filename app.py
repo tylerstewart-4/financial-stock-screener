@@ -22,10 +22,12 @@ universe = st.sidebar.selectbox(
         "Russell 2000"
     ]
 )
+
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
-@st.cache_data(ttl=3600)
+
+@st.cache_data(ttl=1)
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
@@ -37,26 +39,32 @@ def load_stock_data(csv_file):
         try:
 
             stock = yf.Ticker(ticker)
-            fast = stock.fast_info
+            info = stock.info
 
             rows.append({
                 "Ticker": ticker,
                 "PE": info.get("trailingPE", 0),
+
                 "ROE": (
                     info.get("returnOnEquity", 0) * 100
                     if info.get("returnOnEquity")
                     else 0
                 ),
+
                 "DebtEquity": info.get("debtToEquity", 0),
+
                 "CurrentRatio": info.get("currentRatio", 0),
+
                 "RevenueGrowth": (
                     info.get("revenueGrowth", 0) * 100
                     if info.get("revenueGrowth")
                     else 0
                 ),
+
                 "MarketCapBillions": (
                     info.get("marketCap", 0) / 1_000_000_000
                 ),
+
                 "Sector": info.get(
                     "sector",
                     "Unknown"
@@ -81,7 +89,6 @@ def load_stock_data(csv_file):
     ]
 
     for col in numeric_cols:
-
         df[col] = pd.to_numeric(
             df[col],
             errors="coerce"
@@ -95,44 +102,20 @@ def load_stock_data(csv_file):
 # ---------------------------------------------------
 
 if universe == "Custom Watchlist":
-
     df = load_stock_data("tickers.csv")
 
 elif universe == "S&P 500":
-
     df = load_stock_data("sp500.csv")
 
-elif universe == "Russell 2000":
-
-    tickers = pd.read_csv("russell2000.csv")
-
-    st.write("Russell tickers found:", len(tickers))
-
-    st.dataframe(tickers.head())
-
-    st.stop()
-
 else:
-
-    st.error("Unknown universe selected.")
-    st.stop()
-
+    df = load_stock_data("russell2000.csv")
 
 if len(df) == 0:
-
     st.error("No stock data loaded.")
     st.stop()
 
 st.info(
     f"Universe: {universe} | Companies Loaded: {len(df)}"
-)
-
-st.write(
-    f"Screened from {len(df)} companies."
-)
-
-st.caption(
-    f"Analyzing {len(df)} companies using live Yahoo Finance data."
 )
 
 # ---------------------------------------------------
@@ -357,9 +340,9 @@ filtered_df = filtered_df.sort_values(
 )
 
 st.success(
-    f"{len(filtered_df)} of {len(df)} companies passed the screen "
-    f"({round(len(filtered_df)/len(df)*100,1)}%)."
+    f"{len(filtered_df)} companies passed the current screen."
 )
+
 # ---------------------------------------------------
 # DASHBOARD
 # ---------------------------------------------------
