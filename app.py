@@ -288,14 +288,12 @@ def calculate_score(row):
     if row["RevenueGrowth"] == 0:
         missing_data += 1
 
-
     # ROE
 
     if row["ROE"] >= 30:
         score += 25
     elif row["ROE"] >= 20:
         score += 15
-
 
     # PE
 
@@ -304,10 +302,31 @@ def calculate_score(row):
     elif row["PE"] <= 30 and row["PE"] > 0:
         score += 15
 
-
     # Debt
 
-    if row["DebtEquity"] <= 1 and row["DebtEquity
+    if row["DebtEquity"] <= 1 and row["DebtEquity"] > 0:
+        score += 20
+
+    # Strength
+
+    score += row["StrengthScore"] * 5
+
+    # Growth
+
+    if row["RevenueGrowth"] >= 15:
+        score += 15
+
+    # Missing Data Penalty
+
+    score -= missing_data * 15
+
+    return max(min(score, 100), 0)
+
+
+df["Score"] = df.apply(
+    calculate_score,
+    axis=1
+)
 
 # ---------------------------------------------------
 # RECOMMENDATIONS
