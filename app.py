@@ -165,11 +165,6 @@ st.write(df.columns.tolist())
 st.write("First 5 rows:")
 
 st.dataframe(df.head())
-else:
-
-    st.error("Unknown universe selected.")
-    st.stop()
-
 
 if len(df) == 0:
 
