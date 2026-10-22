@@ -18,7 +18,8 @@ st.title("Industry Stock Screener")
 def load_stock_data(csv_file):
 
     tickers = pd.read_csv(csv_file)
-
+    tickers = tickers.head(400)
+    
     rows = []
 
     for ticker in tickers["Ticker"]:
