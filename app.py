@@ -9,11 +9,7 @@ st.set_page_config(
 )
 
 st.title("Industry Stock Screener")
-tab1, tab2 = st.tabs([
-    "📈 Stock Screener",
-    "📘 Learn the Ratios"
-])
-with tab1:
+
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
@@ -671,8 +667,6 @@ st.download_button(
     "text/csv"
 )
 
-tab1, tab2 = st.tabs(...)
-with tab2:
 
     st.header("📘 Understanding Financial Metrics")
 
