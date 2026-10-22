@@ -662,75 +662,104 @@ if len(filtered_df) > 0:
 
 st.subheader("📘 Understanding Financial Metrics")
 
+with st.expander("Click here to learn how the screener works"):
+
     st.markdown("""
 ### PE Ratio (Price-to-Earnings)
 
-**What it measures**
-- How much investors are paying for each dollar of earnings.
+Measures how much investors are paying for each dollar of earnings.
 
-**General guideline**
-- Below 15 → Often considered inexpensive
-- 15 to 30 → Fairly valued
-- Above 30 → Higher growth expectations
+**Typical interpretation**
+- Below 15 = Often considered inexpensive
+- 15 to 30 = Fair value range
+- Above 30 = Higher growth expectations
 
 ---
 
 ### Return on Equity (ROE)
 
-**What it measures**
-- How efficiently a company turns shareholder money into profit.
+Measures how efficiently a company generates profit from shareholder capital.
 
-**General guideline**
-- Below 10% → Weak profitability
-- 10% to 20% → Solid
-- Above 20% → Strong
+**Typical interpretation**
+- Below 10% = Weak
+- 10% to 20% = Good
+- Above 20% = Strong
 
 ---
 
 ### Debt-to-Equity Ratio
 
-**What it measures**
-- How much debt a company uses relative to shareholder equity.
+Measures how much debt a company uses relative to shareholder equity.
 
-**General guideline**
-- Below 1 → Conservative debt levels
-- 1 to 2 → Moderate debt
-- Above 2 → Higher financial risk
+**Typical interpretation**
+- Below 1 = Conservative debt levels
+- 1 to 2 = Moderate debt
+- Above 2 = Higher financial risk
 
 ---
 
 ### Current Ratio
 
-**What it measures**
-- Ability to meet short-term obligations.
+Measures the ability to pay short-term obligations.
 
-**General guideline**
-- Below 1 → Potential liquidity concerns
-- 1 to 2 → Healthy
-- Above 2 → Strong liquidity
+**Typical interpretation**
+- Below 1 = Potential liquidity concern
+- 1 to 2 = Healthy
+- Above 2 = Strong liquidity position
 
 ---
 
 ### Revenue Growth
 
-**What it measures**
-- How quickly company sales are increasing.
+Measures how quickly company sales are increasing.
 
-**General guideline**
-- Negative values → Shrinking revenue
-- 0% to 10% → Moderate growth
-- Above 10% → Strong growth
+**Typical interpretation**
+- Negative = Declining revenue
+- 0% to 10% = Moderate growth
+- Above 10% = Strong growth
 
 ---
 
 ### Market Capitalization
 
-**What it measures**
-- Total market value of the company.
+Measures the total market value of a company.
 
-**General guideline**
-- Under $2B → Small Cap
-- $2B to $10B → Mid
+**Typical interpretation**
+- Under $2 Billion = Small Cap
+- $2 Billion to $10 Billion = Mid Cap
+- Over $10 Billion = Large Cap
+
+---
+
+### Strength Score
+
+The Strength Score combines valuation, growth, profitability and financial health metrics.
+
+Higher scores generally indicate stronger overall fundamentals.
+
+---
+
+### Criteria Met
+
+Shows how many screening requirements a company satisfies.
+
+Companies that satisfy more criteria will generally rank higher in the screener.
+
+---
+
+### BUY / HOLD / SELL Recommendations
+
+Recommendations are generated using:
+
+- Strength Score
+- Criteria Met
+- Profitability
+- Growth
+- Balance Sheet Strength
+- Valuation
+
+These recommendations are intended for educational screening purposes only and should not be considered investment advice.
+""")
 
 # ---------------------------------------------------
 # DOWNLOAD
