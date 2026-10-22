@@ -549,6 +549,33 @@ if len(filtered_df) > 0:
         use_container_width=True
     )
 # --------------------------------------------------
+# HOW THE SCREENER WORKS
+# --------------------------------------------------
+
+st.subheader("📘 How the Screener Works")
+
+st.write("""
+This stock screener evaluates companies using a combination of:
+
+• PE Ratio (valuation)
+• Return on Equity (ROE)
+• Debt-to-Equity Ratio
+• Current Ratio (liquidity)
+• Revenue Growth
+• Market Capitalization
+
+Each company receives a Strength Score based on its financial characteristics.
+
+The screener then calculates:
+• Criteria Met
+• Overall Score
+• BUY / HOLD / SELL recommendation
+
+Companies with stronger profitability, healthier balance sheets,
+reasonable valuations, and stronger growth characteristics tend
+to receive higher scores.
+""")
+# --------------------------------------------------
 # INVESTMENT CONCLUSION
 # --------------------------------------------------
 
