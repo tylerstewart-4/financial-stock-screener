@@ -668,7 +668,6 @@ st.download_button(
 )
 
 
-    st.header("📘 Understanding Financial Metrics")
 
     st.markdown("""
 ### PE Ratio (Price-to-Earnings)
