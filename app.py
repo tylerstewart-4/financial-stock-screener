@@ -662,8 +662,6 @@ if len(filtered_df) > 0:
 
 st.subheader("📘 Understanding Financial Metrics")
 
-with st.expander("Click here to learn how the screener evaluates companies"):
-
     st.markdown("""
 ### PE Ratio (Price-to-Earnings)
 
