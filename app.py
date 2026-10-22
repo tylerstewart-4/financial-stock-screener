@@ -9,7 +9,11 @@ st.set_page_config(
 )
 
 st.title("Industry Stock Screener")
-
+tab1, tab2 = st.tabs([
+    "📈 Stock Screener",
+    "📘 Learn the Ratios"
+])
+with tab1:
 # ---------------------------------------------------
 # LOAD LIVE DATA
 # ---------------------------------------------------
@@ -666,3 +670,100 @@ st.download_button(
     "screening_results.csv",
     "text/csv"
 )
+with tab2:
+
+    st.header("📘 Understanding Financial Metrics")
+
+    st.markdown("""
+### PE Ratio (Price-to-Earnings)
+
+**What it measures**
+- How much investors are paying for each dollar of earnings.
+
+**Rule of thumb**
+- Under 15 → Often considered inexpensive
+- 15-30 → Reasonable valuation range
+- Above 30 → Higher growth expectations
+
+---
+
+### Return on Equity (ROE)
+
+**What it measures**
+- How efficiently a company turns shareholder capital into profit.
+
+**Rule of thumb**
+- Under 10% → Weak
+- 10%-20% → Good
+- Above 20% → Strong
+
+---
+
+### Debt-to-Equity Ratio
+
+**What it measures**
+- The amount of debt compared to shareholder equity.
+
+**Rule of thumb**
+- Under 1 → Low debt
+- 1-2 → Moderate debt
+- Above 2 → Higher financial risk
+
+---
+
+### Current Ratio
+
+**What it measures**
+- Ability to pay short-term obligations.
+
+**Rule of thumb**
+- Under 1 → Potential concern
+- 1-2 → Healthy
+- Above 2 → Strong liquidity
+
+---
+
+### Revenue Growth
+
+**What it measures**
+- How quickly company sales are increasing.
+
+**Rule of thumb**
+- Negative → Declining revenue
+- 0%-10% → Moderate growth
+- Above 10% → Strong growth
+
+---
+
+### Market Capitalization
+
+**What it measures**
+- Total market value of the company.
+
+**General Categories**
+- Under $2B → Small Cap
+- $2B-$10B → Mid Cap
+- Above $10B → Large Cap
+
+---
+
+### How This Screener Works
+
+The screener combines:
+
+- PE Ratio
+- ROE
+- Debt-to-Equity
+- Current Ratio
+- Revenue Growth
+- Market Capitalization
+
+to calculate:
+
+- Strength Score
+- Criteria Met
+- Overall Score
+- BUY / HOLD / SELL Recommendation
+
+The highest-ranked companies are those that satisfy the greatest number of financial criteria while maintaining strong fundamentals.
+""")
