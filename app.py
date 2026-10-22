@@ -417,30 +417,9 @@ c3.metric("SELL", sell_count)
 # RESULTS
 # ---------------------------------------------------
 
-final_rankings = (
-    master_df[
-        [
-            "ticker",
-            "company_name",
-            "sector",
-            "fiscal_period_end_close",
-            "market_cap",
-            "earnings_yield",
-            "enterprise_yield",
-            "cumulative_rank"
-        ]
-    ]
-    .rename(columns={
-        "fiscal_period_end_close": "stock_price",
-        "market_cap": "market_cap",
-        "earnings_yield": "earnings_yield",
-        "enterprise_yield": "enterprise_yield",
-        "cumulative_rank": "rank"
-    })
-    .sort_values("rank")
-)
+st.subheader("Screening Results")
+st.dataframe(filtered_df)
 
-final_rankings.head(50)
 
 # ---------------------------------------------------
 # DISCOVERY
