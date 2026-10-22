@@ -670,6 +670,8 @@ st.download_button(
     "screening_results.csv",
     "text/csv"
 )
+
+tab1, tab2 = st.tabs(...)
 with tab2:
 
     st.header("📘 Understanding Financial Metrics")
